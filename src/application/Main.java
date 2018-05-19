@@ -1,34 +1,25 @@
 package application;
 	
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingDeque;
-
-import application.impl.FacebookUploader;
-import application.impl.FileChecker;
 import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
 import javafx.stage.Stage;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.layout.BorderPane;
 
 
 public class Main extends Application {
-	
-	BlockingQueue<IPicture> queue;
-	IFileChecker fileChecker;
+
 	IFacebookUploader facebookUploader;
 	
 	@Override
 	public void start(Stage primaryStage) {
 		try {
-			queue = new LinkedBlockingDeque<>();
-			fileChecker = new FileChecker(queue);
-			facebookUploader = new FacebookUploader(queue);
-			
-			BorderPane root = new BorderPane();
-			Scene scene = new Scene(root,400,400);
-			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
+			FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("GUI/GUI.fxml"));
+			Parent root = loader.load();
+			Scene scene = new Scene(root);
 			primaryStage.setScene(scene);
 			primaryStage.show();
+			root.requestFocus();
 		} catch(Exception e) {
 			e.printStackTrace();
 		}

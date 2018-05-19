@@ -1,40 +1,73 @@
 package application.impl;
 
-import java.util.concurrent.BlockingQueue;
+import java.util.Queue;
 
 import application.IPicture;
 import application.IUPloadWorker;
 
 public class UploadWorker implements IUPloadWorker {
 
-	BlockingQueue<IPicture> queue;
+	private Queue<IPicture> queueNewFiles;
+	private Queue<IPicture> queueUploadedFiles;
 	
-	public UploadWorker(BlockingQueue<IPicture> queue) {
-		this.queue = queue;
+	private boolean isWorking;
+	private int interval;
+	
+	public UploadWorker(Queue<IPicture> queueNewFiles, Queue<IPicture> queueUploadedFiles) {
+		this.queueNewFiles = queueNewFiles;
+		this.queueUploadedFiles = queueUploadedFiles;
+	}
+	
+	private IPicture takePicture() {		
+		return queueNewFiles.poll();
+	}
+	
+	private boolean uploadPicture(IPicture picture) {
+		if(picture != null) {
+			System.out.println("Datei hochgeladen: " + picture.getFilePath() + " " + picture.getReleaseDate().toString());
+			queueUploadedFiles.add(picture);
+			return true;
+		}
+		return false;
 	}
 	
 	@Override
 	public void run() {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public boolean uploadPicture(IPicture picture) {
-		// TODO Auto-generated method stub
-		return false;
+		isWorking = true;
+		
+		while(isWorking) {
+			
+			uploadPicture(takePicture());
+			
+			try {
+				Thread.sleep(interval);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	@Override
 	public boolean login(String token, String pageID) {
-		// TODO Auto-generated method stub
-		return false;
+		// login zu facebook
+		// überprüfen ob erfolgreich
+		
+		// erfolgreich
+		return true;
+		
+		// nicht erfolgreich
+		// return false;
 	}
 
 	@Override
 	public void setInterval(int interval) {
-		// TODO Auto-generated method stub
+		this.interval = interval;
+	}
 
+	@Override
+	public void stop() {
+		isWorking = false;
+		queueUploadedFiles.clear();
 	}
 
 }

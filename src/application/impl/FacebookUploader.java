@@ -1,35 +1,53 @@
 package application.impl;
 
-import java.util.concurrent.BlockingQueue;
+import java.util.LinkedList;
+import java.util.Queue;
 
 import application.IFacebookUploader;
+import application.IFileWorker;
 import application.IPicture;
 import application.IUPloadWorker;
 
 public class FacebookUploader implements IFacebookUploader {
 
+	private Thread threadUpload;
 	private IUPloadWorker uploadWorker;
 	
-	public FacebookUploader(BlockingQueue<IPicture> queue) {
-		uploadWorker = new UploadWorker(queue);
+	private Thread threadFilesearch;
+	private IFileWorker fileWorker;
+	
+	public FacebookUploader() {
+		Queue<IPicture> queueNewFiles = new LinkedList<>();
+		Queue<IPicture> queueUploadedFiles = new LinkedList<>();
+		uploadWorker = new UploadWorker(queueNewFiles, queueUploadedFiles);
+		fileWorker = new FileWorker(queueNewFiles, queueUploadedFiles);
 	}
 	
 	@Override
 	public boolean login(String token, String page) {
-		// TODO Auto-generated method stub
-		return false;
+		return uploadWorker.login(token, page);
 	}
 
 	@Override
-	public void start(int checkInterval) {
-		// TODO Auto-generated method stub
-
+	public void start(int checkInterval, String path) {
+		if((threadUpload == null && threadFilesearch == null) 
+			|| (!threadUpload.isAlive() && !threadFilesearch.isAlive())) {
+			
+			uploadWorker.setInterval(checkInterval);
+			threadUpload = new Thread(uploadWorker);
+			threadUpload.start();
+			
+			fileWorker.setInterval(checkInterval);
+			fileWorker.setPath(path);
+			threadFilesearch = new Thread(fileWorker);
+			threadFilesearch.start();
+		}
 	}
 
 	@Override
 	public void stop() {
-		// TODO Auto-generated method stub
-
+		uploadWorker.stop();
+		fileWorker.stop();
 	}
 
 	@Override
