@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GUI.Controller">
+   <children>
+      <VBox alignment="TOP_CENTER" prefWidth="300.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <TextField fx:id="accesstoken" promptText="Access-Token" />
+            <TextField fx:id="pageID" promptText="Page-ID" />
+            <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#login" text="Login" />
+            <Text fx:id="loginNotification" strokeType="OUTSIDE" strokeWidth="0.0">
+               <VBox.margin>
+                  <Insets bottom="5.0" top="5.0" />
+               </VBox.margin>
+            </Text>
+            <TextField fx:id="intervall" promptText="Intervall in Sekunden">
+               <VBox.margin>
+                  <Insets top="10.0" />
+               </VBox.margin></TextField>
+            <TextField fx:id="path" promptText="Ordnerpfad" />
+            <HBox alignment="TOP_CENTER" maxWidth="1.7976931348623157E308">
+               <children>
+                  <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#start" text="Start" HBox.hgrow="ALWAYS" />
+                  <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#stop" text="Stop" HBox.hgrow="ALWAYS" />
+               </children>
+            </HBox>
+            <Text fx:id="searchNotification" strokeType="OUTSIDE" strokeWidth="0.0">
+               <VBox.margin>
+                  <Insets bottom="5.0" top="5.0" />
+               </VBox.margin>
+            </Text>
+         </children>
+      </VBox>
+   </children>
+</AnchorPane>
