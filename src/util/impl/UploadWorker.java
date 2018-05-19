@@ -1,9 +1,9 @@
-package application.impl;
+package util.impl;
 
 import java.util.Queue;
 
-import application.IPicture;
-import application.IUPloadWorker;
+import entities.IPicture;
+import util.IUPloadWorker;
 
 public class UploadWorker implements IUPloadWorker {
 

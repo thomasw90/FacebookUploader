@@ -1,15 +1,15 @@
-package GUI;
+package application.GUI;
 
 import java.net.URL;
 import java.util.ResourceBundle;
 
-import application.IFacebookUploader;
-import application.impl.FacebookUploader;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.TextField;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
+import util.IFacebookUploader;
+import util.impl.FacebookUploader;
 
 public class Controller implements Initializable {
 

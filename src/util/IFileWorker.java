@@ -1,4 +1,4 @@
-package application;
+package util;
 
 public interface IFileWorker extends Runnable {
 	void setPath(String path);

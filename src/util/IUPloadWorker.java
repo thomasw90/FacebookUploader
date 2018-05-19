@@ -1,4 +1,4 @@
-package application;
+package util;
 
 public interface IUPloadWorker extends Runnable {
 	boolean login(String token, String pageID);

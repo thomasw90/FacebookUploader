@@ -1,4 +1,4 @@
-package application;
+package util;
 
 public interface IFacebookUploader {
 	boolean login(String token, String page);

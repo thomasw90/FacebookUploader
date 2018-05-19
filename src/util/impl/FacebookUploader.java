@@ -1,12 +1,12 @@
-package application.impl;
+package util.impl;
 
 import java.util.LinkedList;
 import java.util.Queue;
 
-import application.IFacebookUploader;
-import application.IFileWorker;
-import application.IPicture;
-import application.IUPloadWorker;
+import entities.IPicture;
+import util.IFacebookUploader;
+import util.IFileWorker;
+import util.IUPloadWorker;
 
 public class FacebookUploader implements IFacebookUploader {
 

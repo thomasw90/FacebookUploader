@@ -1,4 +1,4 @@
-package application.impl;
+package util.impl;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -6,8 +6,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Queue;
 
-import application.IFileWorker;
-import application.IPicture;
+import entities.IPicture;
+import entities.impl.Picture;
+import util.IFileWorker;
 
 public class FileWorker implements IFileWorker {
 

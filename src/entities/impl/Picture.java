@@ -1,8 +1,8 @@
-package application.impl;
+package entities.impl;
 
 import java.util.Date;
 
-import application.IPicture;
+import entities.IPicture;
 
 public class Picture implements IPicture {
 
