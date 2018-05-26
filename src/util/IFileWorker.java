@@ -1,7 +1,6 @@
 package util;
 
 public interface IFileWorker extends Runnable {
-	void setPath(String path);
-	void setInterval(int interval);
+	void setData(int checkInterval, String folderPath);
 	void stop();
 }

@@ -1,4 +1,4 @@
-package application;
+package main;
 	
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -15,12 +15,14 @@ public class Main extends Application {
 	@Override
 	public void start(Stage primaryStage) {
 		try {
-			FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("GUI/GUI.fxml"));
+			FXMLLoader loader = new FXMLLoader();
+			loader.setLocation(getClass().getResource("resources/GUI.fxml"));
 			Parent root = loader.load();
 			Scene scene = new Scene(root);
 			primaryStage.setScene(scene);
 			primaryStage.show();
 			root.requestFocus();
+			primaryStage.setTitle("Facebook Picture Uploader");
 		} catch(Exception e) {
 			e.printStackTrace();
 		}

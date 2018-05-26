@@ -1,5 +1,6 @@
 package util.impl;
 
+import java.time.LocalDate;
 import java.util.LinkedList;
 import java.util.Queue;
 
@@ -21,6 +22,9 @@ public class FacebookUploader implements IFacebookUploader {
 		Queue<IPicture> queueUploadedFiles = new LinkedList<>();
 		uploadWorker = new UploadWorker(queueNewFiles, queueUploadedFiles);
 		fileWorker = new FileWorker(queueNewFiles, queueUploadedFiles);
+		
+		//BooleanBinding  s = threadUpload.isAlive() && threadFilesearch.isAlive();
+		
 	}
 	
 	@Override
@@ -29,16 +33,15 @@ public class FacebookUploader implements IFacebookUploader {
 	}
 
 	@Override
-	public void start(int checkInterval, String path) {
+	public void start(int checkInterval, String path, LocalDate startDate, String publishTimes) {
 		if((threadUpload == null && threadFilesearch == null) 
 			|| (!threadUpload.isAlive() && !threadFilesearch.isAlive())) {
 			
-			uploadWorker.setInterval(checkInterval);
+			uploadWorker.setData(checkInterval, startDate, publishTimes);
 			threadUpload = new Thread(uploadWorker);
 			threadUpload.start();
 			
-			fileWorker.setInterval(checkInterval);
-			fileWorker.setPath(path);
+			fileWorker.setData(checkInterval, path);
 			threadFilesearch = new Thread(fileWorker);
 			threadFilesearch.start();
 		}

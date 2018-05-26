@@ -17,8 +17,9 @@ public class FileWorker implements IFileWorker {
 	private List<String> alreadyFoundFiles;
 	
 	private boolean isWorking;
-	private int interval;
+	private int checkInterval;
 	private String folderPath;
+	private String subFolderPath;
 	
 	public FileWorker(Queue<IPicture> queueNewFiles, Queue<IPicture> queueUploadedFiles) {
 		this.queueNewFiles = queueNewFiles;
@@ -43,15 +44,8 @@ public class FileWorker implements IFileWorker {
 	private void removeUploadedPictures() {
 		IPicture uploadedPicture = queueUploadedFiles.poll();
 		if(uploadedPicture != null) {
-			
-			File oldPath = new File(uploadedPicture.getFilePath());
-			
-			File subfolder = new File(oldPath.getParentFile().toString() + File.separator + "uploaded");
-			if(!subfolder.exists()) {
-				subfolder.mkdir();
-			}
-					
-			File newPath = new File(subfolder.toString() + File.separator + oldPath.getName());
+			File oldPath = new File(uploadedPicture.getFilePath());	
+			File newPath = new File(subFolderPath + File.separator + oldPath.getName());
 			oldPath.renameTo(newPath);
 			alreadyFoundFiles.remove(uploadedPicture.getFilePath());
 		}
@@ -67,21 +61,11 @@ public class FileWorker implements IFileWorker {
 			removeUploadedPictures();
 			
 			try {
-				Thread.sleep(interval);
+				Thread.sleep(checkInterval);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
 		}
-	}
-
-	@Override
-	public void setPath(String path) {
-		this.folderPath = path;
-	}
-
-	@Override
-	public void setInterval(int interval) {
-		this.interval = interval;
 	}
 
 	@Override
@@ -90,4 +74,15 @@ public class FileWorker implements IFileWorker {
 		queueNewFiles.clear();
 	}
 
+	@Override
+	public void setData(int checkInterval, String folderPath) {
+			this.folderPath = folderPath;
+			this.checkInterval = checkInterval;
+			
+			File subfolder = new File(folderPath.toString() + File.separator + "uploaded");
+			if(!subfolder.exists()) {
+				subfolder.mkdir();
+			}
+			subFolderPath = subfolder.toString();
+	}
 }

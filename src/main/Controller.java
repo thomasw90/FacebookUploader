@@ -1,10 +1,11 @@
-package application.GUI;
+package main;
 
 import java.net.URL;
 import java.util.ResourceBundle;
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextField;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
@@ -13,6 +14,8 @@ import util.impl.FacebookUploader;
 
 public class Controller implements Initializable {
 
+	private static int CHECKINTERVALL = 2000;
+	
 	private IFacebookUploader uploader;
 	
 	@FXML
@@ -22,15 +25,18 @@ public class Controller implements Initializable {
 	@FXML
 	private Text loginNotification;
 	@FXML
-	private TextField intervall;
-	@FXML
 	private TextField path;	
 	@FXML
 	private Text searchNotification;
+	@FXML
+	private DatePicker datePicker;
+	@FXML
+	private TextField publishTimes;
 		
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
 		uploader = new FacebookUploader();
+		//searchNotification.textProperty().bind(null);
 	}
 	
 	public void login() {
@@ -43,12 +49,12 @@ public class Controller implements Initializable {
 		}
 	}
 	
-	public void start() {
+	public void start() {	
 		try {
-			uploader.start(Integer.parseInt(intervall.getText()) * 1000, path.getText());
-			searchNotification.setText("");
+			uploader.start(CHECKINTERVALL, path.getText(), datePicker.getValue(), publishTimes.getText());
+			searchNotification.setText("läuft");
 		} catch(NumberFormatException e){
-			searchNotification.setText("bitte Ganzzahl eingeben");
+			searchNotification.setText("Fehler");
 		}
 	}
 	
