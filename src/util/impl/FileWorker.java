@@ -8,6 +8,8 @@ import java.util.Queue;
 
 import entities.IPicture;
 import entities.impl.Picture;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import util.IFileWorker;
 
 public class FileWorker implements IFileWorker {
@@ -20,6 +22,8 @@ public class FileWorker implements IFileWorker {
 	private int checkInterval;
 	private String folderPath;
 	private String subFolderPath;
+	
+	private final IntegerProperty numToUpload = new SimpleIntegerProperty(0);
 	
 	public FileWorker(Queue<IPicture> queueNewFiles, Queue<IPicture> queueUploadedFiles) {
 		this.queueNewFiles = queueNewFiles;
@@ -37,6 +41,7 @@ public class FileWorker implements IFileWorker {
 		    	alreadyFoundFiles.add(file.getAbsolutePath());
 				IPicture newPicture = new Picture(file.getAbsolutePath(), new Date());
 				queueNewFiles.add(newPicture);
+				numToUpload.set(numToUpload.get() + 1);
 		    }
 		}
 	}
@@ -54,6 +59,7 @@ public class FileWorker implements IFileWorker {
 	@Override
 	public void run() {
 		isWorking = true;
+		numToUpload.set(0);
 		
 		while(isWorking) {
 
@@ -85,4 +91,9 @@ public class FileWorker implements IFileWorker {
 			}
 			subFolderPath = subfolder.toString();
 	}
+	
+	@Override
+	public IntegerProperty getNumToUpload() {
+        return numToUpload;
+    }
 }

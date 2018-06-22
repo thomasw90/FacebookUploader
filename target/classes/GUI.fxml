@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.text.*?>
 <?import javafx.scene.control.*?>
@@ -16,9 +17,14 @@
             <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#login" text="Login" />
             <Text fx:id="loginNotification" strokeType="OUTSIDE" strokeWidth="0.0" text="nicht eingeloggt">
                <VBox.margin>
-                  <Insets bottom="5.0" top="5.0" />
+                  <Insets />
                </VBox.margin>
             </Text>
+            <Separator>
+               <VBox.margin>
+                  <Insets bottom="5.0" top="5.0" />
+               </VBox.margin>
+            </Separator>
             <HBox maxWidth="1.7976931348623157E308">
                <children>
                   <TextField fx:id="publishTimes" maxWidth="1.7976931348623157E308" promptText="Uhrzeiten: 16:00, 18:30" text="16:00, 18:00, 20:00" />
@@ -28,19 +34,56 @@
                      </HBox.margin>
                   </DatePicker>
                </children>
+               <VBox.margin>
+                  <Insets />
+               </VBox.margin>
             </HBox>
-            <TextField fx:id="path" promptText="Ordnerpfad" text="C:\Users\Thomas\Desktop\testfolder" />
+            <TextField fx:id="path" promptText="Ordnerpfad" text="C:\Users\Thomas\Desktop\uploads">
+               <VBox.margin>
+                  <Insets />
+               </VBox.margin>
+            </TextField>
+            <Separator prefWidth="200.0">
+               <VBox.margin>
+                  <Insets bottom="5.0" top="5.0" />
+               </VBox.margin>
+            </Separator>
+            <HBox alignment="CENTER" maxWidth="1.7976931348623157E308">
+               <children>
+                  <Text fx:id="numUploads" strokeType="OUTSIDE" strokeWidth="0.0" text="0">
+                     <HBox.margin>
+                        <Insets />
+                     </HBox.margin>
+                     <font>
+                        <Font size="30.0" />
+                     </font>
+                  </Text>
+                  <Text strokeType="OUTSIDE" strokeWidth="0.0" text="/">
+                     <HBox.margin>
+                        <Insets left="5.0" right="5.0" />
+                     </HBox.margin>
+                     <font>
+                        <Font size="30.0" />
+                     </font>
+                  </Text>
+                  <Text fx:id="numToUpload" strokeType="OUTSIDE" strokeWidth="0.0" text="0">
+                     <font>
+                        <Font size="30.0" />
+                     </font></Text>
+               </children>
+            </HBox>
+            <StackPane>
+               <children>
+                  <ProgressBar fx:id="progressBarActive" maxWidth="1.7976931348623157E308" />
+                  <ProgressBar fx:id="progressBar" prefHeight="18.0" prefWidth="300.0" progress="0.0" />
+               </children>
+            </StackPane>
             <HBox alignment="TOP_CENTER" maxWidth="1.7976931348623157E308" spacing="5.0">
                <children>
                   <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#start" text="Start" HBox.hgrow="ALWAYS" />
                   <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#stop" text="Stopp" HBox.hgrow="ALWAYS" />
                </children>
             </HBox>
-            <Text fx:id="searchNotification" strokeType="OUTSIDE" strokeWidth="0.0" text="nicht gestartet">
-               <VBox.margin>
-                  <Insets bottom="5.0" top="5.0" />
-               </VBox.margin>
-            </Text>
          </children>
       </VBox>
    </children>

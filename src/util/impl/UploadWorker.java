@@ -19,6 +19,8 @@ import com.restfb.types.GraphResponse;
 import com.restfb.types.Page;
 
 import entities.IPicture;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import util.IUPloadWorker;
 
 public class UploadWorker implements IUPloadWorker {
@@ -34,6 +36,8 @@ public class UploadWorker implements IUPloadWorker {
 	
 	private Queue<LocalTime> publishLocalTimes;	
 	private ZonedDateTime nextPublishDate;
+	
+	private final IntegerProperty numUploaded = new SimpleIntegerProperty(0);
 	
 	public UploadWorker(Queue<IPicture> queueNewFiles, Queue<IPicture> queueUploadedFiles) {
 		this.queueNewFiles = queueNewFiles;
@@ -93,6 +97,7 @@ public class UploadWorker implements IUPloadWorker {
 									 BinaryAttachment.with("Test.jpg", fileContent));
 				}			 
 				queueUploadedFiles.add(picture);
+				numUploaded.set(numUploaded.get() + 1);
 				return true;
 			} catch (Exception e) {}
 		}
@@ -144,5 +149,10 @@ public class UploadWorker implements IUPloadWorker {
 			nextPublishDate = null;
 		}
 	}
+	
+	@Override
+	public IntegerProperty getNumUploads() {
+        return numUploaded;
+    }
 }
 
