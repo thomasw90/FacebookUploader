@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 import entities.IPicture;
+import javafx.beans.property.IntegerProperty;
 import util.IFacebookUploader;
 import util.IFileWorker;
 import util.IUPloadWorker;
@@ -22,9 +23,7 @@ public class FacebookUploader implements IFacebookUploader {
 		Queue<IPicture> queueUploadedFiles = new LinkedList<>();
 		uploadWorker = new UploadWorker(queueNewFiles, queueUploadedFiles);
 		fileWorker = new FileWorker(queueNewFiles, queueUploadedFiles);
-		
 		//BooleanBinding  s = threadUpload.isAlive() && threadFilesearch.isAlive();
-		
 	}
 	
 	@Override
@@ -55,8 +54,16 @@ public class FacebookUploader implements IFacebookUploader {
 
 	@Override
 	public boolean isActive() {
-		// TODO Auto-generated method stub
 		return false;
 	}
+	
+	@Override
+	public IntegerProperty getNumUploads() {
+        return uploadWorker.getNumUploads();
+    }
 
+	@Override
+	public IntegerProperty getNumToUpload() {
+        return fileWorker.getNumToUpload();
+    }
 }
