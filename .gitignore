@@ -1,16 +1,14 @@
-﻿# Compiled source #
-###################
-*.com
-*.class
-*.dll
-*.exe
-*.o
-*.so
+﻿#
+# Project specific excludes
+#
 
-# Packages #
-############
-# it's better to unpack these files and commit the raw source
-# git has its own built in compression methods
+tomcat
+
+#
+# Default excludes
+#
+
+# Binaries
 *.7z
 *.dmg
 *.gz
@@ -19,19 +17,34 @@
 *.rar
 *.tar
 *.zip
+*.war
+*.ear
+*.sar
+*.class
 
-# Logs and databases #
-######################
-*.log
-*.sql
-*.sqlite
+# Maven 
+target/
 
-# OS generated files #
-######################
+# eclipse project file
+.settings/
+.classpath
+.project
+
+# NetBeans specific
+nbproject/private/
+build/
+nbbuild/
+dist/
+nbdist/
+nbactions.xml
+nb-configuration.xml
+
+
+# OS
 .DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
-Thumbs.db
+
+# Misc
+*.swp
+release.properties
+pom.xml.releaseBackup
+pom.xml.tag
