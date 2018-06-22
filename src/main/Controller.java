@@ -49,7 +49,6 @@ public class Controller implements Initializable {
 		numUploads.textProperty().bindBidirectional(uploader.getNumUploads(), new NumberStringConverter());
 		numToUpload.textProperty().bindBidirectional(uploader.getNumToUpload(), new NumberStringConverter());
 		setRunning(false);
-		System.out.println("test");
 	}
 	
 	public void login() {

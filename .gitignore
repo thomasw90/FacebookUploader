@@ -27,6 +27,7 @@ target/
 
 # eclipse project file
 .settings/
+.gradle/
 .classpath
 .project
 
