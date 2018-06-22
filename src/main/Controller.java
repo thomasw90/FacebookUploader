@@ -14,7 +14,7 @@ import util.impl.FacebookUploader;
 
 public class Controller implements Initializable {
 
-	private static int CHECKINTERVALL = 2000;
+	private final static int CHECKINTERVALL = 2000;
 	
 	private IFacebookUploader uploader;
 	
