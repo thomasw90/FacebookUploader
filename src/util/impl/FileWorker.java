@@ -6,28 +6,35 @@ import java.util.Date;
 import java.util.List;
 import java.util.Queue;
 
-import entities.IPicture;
-import entities.impl.Picture;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
-import util.IFileWorker;
 
-public class FileWorker implements IFileWorker {
+public class FileWorker implements Runnable {
 
-	private Queue<IPicture> queueNewFiles;
-	private Queue<IPicture> queueUploadedFiles;
+	private Queue<Picture> queueNewFiles;
+	private Queue<Picture> queueUploadedFiles;
 	private List<String> alreadyFoundFiles;
 	
-	private boolean isWorking;
+	private boolean work;
 	private int checkInterval;
 	private String folderPath;
 	private String subFolderPath;
 	
-	private final IntegerProperty numToUpload = new SimpleIntegerProperty(0);
+	private Object syncObj;
 	
-	public FileWorker(Queue<IPicture> queueNewFiles, Queue<IPicture> queueUploadedFiles) {
+	private final IntegerProperty numToUpload = new SimpleIntegerProperty(0);
+	private final BooleanProperty running = new SimpleBooleanProperty(false);
+	private final BooleanProperty finishing = new SimpleBooleanProperty(false);
+	
+	private BooleanProperty uploadWorkerRunning;
+	
+	public FileWorker(Queue<Picture> queueNewFiles, Queue<Picture> queueUploadedFiles, Object syncObj, BooleanProperty uploadWorkerRunning) {
 		this.queueNewFiles = queueNewFiles;
 		this.queueUploadedFiles = queueUploadedFiles;
+		this.syncObj = syncObj;
+		this.uploadWorkerRunning = uploadWorkerRunning;
 		alreadyFoundFiles = new ArrayList<>();
 	}
 	
@@ -39,7 +46,7 @@ public class FileWorker implements IFileWorker {
 		for (File file : listOfFiles) {
 		    if (file.isFile() && !alreadyFoundFiles.contains(file.getAbsolutePath())) {
 		    	alreadyFoundFiles.add(file.getAbsolutePath());
-				IPicture newPicture = new Picture(file.getAbsolutePath(), new Date());
+		    	Picture newPicture = new Picture(file.getAbsolutePath(), new Date());
 				queueNewFiles.add(newPicture);
 				numToUpload.set(numToUpload.get() + 1);
 		    }
@@ -47,7 +54,7 @@ public class FileWorker implements IFileWorker {
 	}
 	
 	private void removeUploadedPictures() {
-		IPicture uploadedPicture = queueUploadedFiles.poll();
+		Picture uploadedPicture = queueUploadedFiles.poll();
 		if(uploadedPicture != null) {
 			File oldPath = new File(uploadedPicture.getFilePath());	
 			File newPath = new File(subFolderPath + File.separator + oldPath.getName());
@@ -58,29 +65,43 @@ public class FileWorker implements IFileWorker {
 	
 	@Override
 	public void run() {
-		isWorking = true;
-		numToUpload.set(0);
+		running.set(true);
 		
-		while(isWorking) {
-
+		numToUpload.set(0);		
+		work = true;		
+		while(work) {
 			checkForNewPictures();
-			removeUploadedPictures();
-			
+			removeUploadedPictures();			
 			try {
 				Thread.sleep(checkInterval);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
 		}
+		alreadyFoundFiles.clear();
+		queueNewFiles.clear();
+		
+		if(uploadWorkerRunning.get()) {
+			synchronized (syncObj) {
+				try{
+					syncObj.wait();
+	            } catch(InterruptedException e){
+	                e.printStackTrace();
+	            }
+				removeUploadedPictures();
+			}
+		}
+		
+		running.set(false);
+		finishing.set(false);
 	}
 
-	@Override
 	public void stop() {
-		isWorking = false;
+		finishing.set(true);
+		work = false;
 		queueNewFiles.clear();
 	}
 
-	@Override
 	public void setData(int checkInterval, String folderPath) {
 			this.folderPath = folderPath;
 			this.checkInterval = checkInterval;
@@ -92,8 +113,15 @@ public class FileWorker implements IFileWorker {
 			subFolderPath = subfolder.toString();
 	}
 	
-	@Override
 	public IntegerProperty getNumToUpload() {
         return numToUpload;
     }
+
+	public BooleanProperty isRunning() {
+		return running;
+	}
+	
+	public BooleanProperty isFinishing() {
+		return finishing;
+	}
 }

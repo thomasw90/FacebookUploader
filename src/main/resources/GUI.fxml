@@ -15,7 +15,7 @@
             <TextField fx:id="accesstoken" promptText="Access-Token" text="EAACEdEose0cBAJ6NRVZCZA3M1y1DngymHEHKGjdByeCfb8FWCx0ZAglw9exE99scOnHqpcN3o7u54ytFTOBPFLf6mJ3yINc4FoTMJ0xeJQck56JknfCsXoCPVASWwDckHtuCFBi93P04OXOHPEbnHggwcSPNCh53Htsbx9koqX50j6QM6TIgEwHXfMyM1CnQOO4YFZCEnAZDZD" />
             <TextField fx:id="pageID" promptText="Page-ID" text="witze.versaut" />
             <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#login" text="Login" />
-            <Text fx:id="loginNotification" strokeType="OUTSIDE" strokeWidth="0.0" text="nicht eingeloggt">
+            <Text fx:id="loginNotification" strokeType="OUTSIDE" strokeWidth="0.0">
                <VBox.margin>
                   <Insets />
                </VBox.margin>
@@ -27,8 +27,8 @@
             </Separator>
             <HBox maxWidth="1.7976931348623157E308">
                <children>
-                  <TextField fx:id="publishTimes" maxWidth="1.7976931348623157E308" promptText="Uhrzeiten: 16:00, 18:30" text="16:00, 18:00, 20:00" />
-                  <DatePicker fx:id="datePicker" promptText="Startdatum">
+                  <TextField fx:id="publishTimes" maxWidth="1.7976931348623157E308" promptText="Time: 16:00, 18:30" text="16:00, 18:00, 20:00" />
+                  <DatePicker fx:id="datePicker" promptText="Startdate">
                      <HBox.margin>
                         <Insets left="5.0" />
                      </HBox.margin>
@@ -38,7 +38,7 @@
                   <Insets />
                </VBox.margin>
             </HBox>
-            <TextField fx:id="path" promptText="Ordnerpfad" text="C:\Users\Thomas\Desktop\uploads">
+            <TextField fx:id="path" promptText="Directory" text="C:\Users\Thomas\Desktop\uploads">
                <VBox.margin>
                   <Insets />
                </VBox.margin>
@@ -76,12 +76,13 @@
                <children>
                   <ProgressBar fx:id="progressBarActive" maxWidth="1.7976931348623157E308" />
                   <ProgressBar fx:id="progressBar" prefHeight="18.0" prefWidth="300.0" progress="0.0" />
+                  <Text fx:id="finishing" strokeType="OUTSIDE" strokeWidth="0.0" text="Finishing current file" />
                </children>
             </StackPane>
             <HBox alignment="TOP_CENTER" maxWidth="1.7976931348623157E308" spacing="5.0">
                <children>
-                  <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#start" text="Start" HBox.hgrow="ALWAYS" />
-                  <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#stop" text="Stopp" HBox.hgrow="ALWAYS" />
+                  <Button fx:id="startButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#start" text="Start" HBox.hgrow="ALWAYS" />
+                  <Button fx:id="stopButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#stop" text="Stop" HBox.hgrow="ALWAYS" />
                </children>
             </HBox>
          </children>

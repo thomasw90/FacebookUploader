@@ -18,34 +18,39 @@ import com.restfb.exception.FacebookException;
 import com.restfb.types.GraphResponse;
 import com.restfb.types.Page;
 
-import entities.IPicture;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
-import util.IUPloadWorker;
 
-public class UploadWorker implements IUPloadWorker {
+public class UploadWorker implements  Runnable {
 
-	private Queue<IPicture> queueNewFiles;
-	private Queue<IPicture> queueUploadedFiles;
+	private Queue<Picture> queueNewFiles;
+	private Queue<Picture> queueUploadedFiles;
 	
 	private FacebookClient fbClient;
 	private String pageID;
 	
-	private boolean isWorking;
+	private boolean work;
 	private int interval;
+	
+	private Object syncObj;
 	
 	private Queue<LocalTime> publishLocalTimes;	
 	private ZonedDateTime nextPublishDate;
 	
 	private final IntegerProperty numUploaded = new SimpleIntegerProperty(0);
+	private final BooleanProperty running = new SimpleBooleanProperty(false);
+	private final BooleanProperty finishing = new SimpleBooleanProperty(false);
 	
-	public UploadWorker(Queue<IPicture> queueNewFiles, Queue<IPicture> queueUploadedFiles) {
+	public UploadWorker(Queue<Picture> queueNewFiles, Queue<Picture> queueUploadedFiles, Object syncObj) {
 		this.queueNewFiles = queueNewFiles;
 		this.queueUploadedFiles = queueUploadedFiles;
+		this.syncObj = syncObj;
 		publishLocalTimes = new LinkedList<>();
 	}
 	
-	private IPicture takePicture() {		
+	private Picture takePicture() {		
 		return queueNewFiles.poll();
 	}
 	
@@ -80,7 +85,7 @@ public class UploadWorker implements IUPloadWorker {
 		}
 	}
 	
-	private boolean uploadPicture(IPicture picture) {
+	private boolean uploadPicture(Picture picture) {
 		if(picture != null) {
 			try {
 				byte[] fileContent = Files.readAllBytes((new File(picture.getFilePath()).toPath()));
@@ -106,21 +111,25 @@ public class UploadWorker implements IUPloadWorker {
 	
 	@Override
 	public void run() {
-		isWorking = true;
+		running.set(true);
 		
-		while(isWorking) {
-			
-			uploadPicture(takePicture());
-			
+		numUploaded.set(0);		
+		work = true;		
+		while(work) {	
+			uploadPicture(takePicture());	
 			try {
 				Thread.sleep(interval);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
 		}
+		synchronized(syncObj) {
+			syncObj.notifyAll();
+        }		
+		running.set(false);
+		finishing.set(false);
 	}
 
-	@Override
 	public boolean login(String token, String pageID) {
 		this.pageID = pageID;		
 		fbClient = new DefaultFacebookClient(token, Version.VERSION_2_6);
@@ -132,13 +141,12 @@ public class UploadWorker implements IUPloadWorker {
 		}
 	}
 
-	@Override
 	public void stop() {
-		isWorking = false;
+		finishing.set(true);
+		work = false;
 		queueUploadedFiles.clear();
 	}
 
-	@Override
 	public void setData(int interval, LocalDate startDate, String publishTimes) {
 		this.interval = interval;
 				
@@ -150,9 +158,16 @@ public class UploadWorker implements IUPloadWorker {
 		}
 	}
 	
-	@Override
 	public IntegerProperty getNumUploads() {
         return numUploaded;
     }
+
+	public BooleanProperty isRunning() {
+		return running;
+	}
+	
+	public BooleanProperty isFinishing() {
+		return finishing;
+	}
 }
 

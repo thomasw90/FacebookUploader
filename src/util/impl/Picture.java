@@ -1,10 +1,8 @@
-package entities.impl;
+package util.impl;
 
 import java.util.Date;
 
-import entities.IPicture;
-
-public class Picture implements IPicture {
+public class Picture {
 
 	private String filePath;
 	private Date releaseDate;
@@ -14,14 +12,11 @@ public class Picture implements IPicture {
 		this.releaseDate = releaseDate;
 	}
 	
-	@Override
 	public String getFilePath() {
 		return filePath;
 	}
 
-	@Override
 	public Date getReleaseDate() {
 		return releaseDate;
 	}
-
 }

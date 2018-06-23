@@ -4,26 +4,26 @@ import java.time.LocalDate;
 import java.util.LinkedList;
 import java.util.Queue;
 
-import entities.IPicture;
+import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.IntegerProperty;
 import util.IFacebookUploader;
-import util.IFileWorker;
-import util.IUPloadWorker;
 
 public class FacebookUploader implements IFacebookUploader {
 
 	private Thread threadUpload;
-	private IUPloadWorker uploadWorker;
+	private UploadWorker uploadWorker;
 	
 	private Thread threadFilesearch;
-	private IFileWorker fileWorker;
+	private FileWorker fileWorker;
+	
+	private Object syncObj;
 	
 	public FacebookUploader() {
-		Queue<IPicture> queueNewFiles = new LinkedList<>();
-		Queue<IPicture> queueUploadedFiles = new LinkedList<>();
-		uploadWorker = new UploadWorker(queueNewFiles, queueUploadedFiles);
-		fileWorker = new FileWorker(queueNewFiles, queueUploadedFiles);
-		//BooleanBinding  s = threadUpload.isAlive() && threadFilesearch.isAlive();
+		Queue<Picture> queueNewFiles = new LinkedList<>();
+		Queue<Picture> queueUploadedFiles = new LinkedList<>();
+		syncObj = new Object();
+		uploadWorker = new UploadWorker(queueNewFiles, queueUploadedFiles, syncObj);
+		fileWorker = new FileWorker(queueNewFiles, queueUploadedFiles, syncObj, uploadWorker.isRunning());
 	}
 	
 	@Override
@@ -33,7 +33,7 @@ public class FacebookUploader implements IFacebookUploader {
 
 	@Override
 	public void start(int checkInterval, String path, LocalDate startDate, String publishTimes) {
-		if((threadUpload == null && threadFilesearch == null) 
+		if((threadUpload == null && threadFilesearch == null)
 			|| (!threadUpload.isAlive() && !threadFilesearch.isAlive())) {
 			
 			uploadWorker.setData(checkInterval, startDate, publishTimes);
@@ -53,8 +53,13 @@ public class FacebookUploader implements IFacebookUploader {
 	}
 
 	@Override
-	public boolean isActive() {
-		return false;
+	public BooleanBinding isActive() {
+		return uploadWorker.isRunning().or(fileWorker.isRunning());
+	}
+	
+	@Override
+	public BooleanBinding isFinishing() {
+		return uploadWorker.isFinishing().or(fileWorker.isFinishing());
 	}
 	
 	@Override
