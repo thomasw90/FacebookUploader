@@ -80,8 +80,8 @@
             </StackPane>
             <HBox alignment="TOP_CENTER" maxWidth="1.7976931348623157E308" spacing="5.0">
                <children>
-                  <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#start" text="Start" HBox.hgrow="ALWAYS" />
-                  <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#stop" text="Stopp" HBox.hgrow="ALWAYS" />
+                  <Button fx:id="startButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#start" text="Start" HBox.hgrow="ALWAYS" />
+                  <Button fx:id="stopButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#stop" text="Stopp" HBox.hgrow="ALWAYS" />
                </children>
             </HBox>
          </children>

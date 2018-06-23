@@ -8,7 +8,9 @@ import java.util.Queue;
 
 import entities.IPicture;
 import entities.impl.Picture;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import util.IFileWorker;
 
@@ -18,12 +20,13 @@ public class FileWorker implements IFileWorker {
 	private Queue<IPicture> queueUploadedFiles;
 	private List<String> alreadyFoundFiles;
 	
-	private boolean isWorking;
+	private boolean work;
 	private int checkInterval;
 	private String folderPath;
 	private String subFolderPath;
 	
 	private final IntegerProperty numToUpload = new SimpleIntegerProperty(0);
+	private final BooleanProperty running = new SimpleBooleanProperty(false);
 	
 	public FileWorker(Queue<IPicture> queueNewFiles, Queue<IPicture> queueUploadedFiles) {
 		this.queueNewFiles = queueNewFiles;
@@ -58,25 +61,28 @@ public class FileWorker implements IFileWorker {
 	
 	@Override
 	public void run() {
-		isWorking = true;
-		numToUpload.set(0);
+		running.set(true);
 		
-		while(isWorking) {
-
+		numToUpload.set(0);		
+		work = true;		
+		while(work) {
 			checkForNewPictures();
-			removeUploadedPictures();
-			
+			removeUploadedPictures();			
 			try {
 				Thread.sleep(checkInterval);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
 		}
+		alreadyFoundFiles.clear();
+		queueNewFiles.clear();
+		
+		running.set(false);
 	}
 
 	@Override
 	public void stop() {
-		isWorking = false;
+		work = false;
 		queueNewFiles.clear();
 	}
 
@@ -96,4 +102,9 @@ public class FileWorker implements IFileWorker {
 	public IntegerProperty getNumToUpload() {
         return numToUpload;
     }
+
+	@Override
+	public BooleanProperty isRunning() {
+		return running;
+	}
 }

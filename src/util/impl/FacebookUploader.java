@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 import entities.IPicture;
+import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.IntegerProperty;
 import util.IFacebookUploader;
 import util.IFileWorker;
@@ -23,7 +24,6 @@ public class FacebookUploader implements IFacebookUploader {
 		Queue<IPicture> queueUploadedFiles = new LinkedList<>();
 		uploadWorker = new UploadWorker(queueNewFiles, queueUploadedFiles);
 		fileWorker = new FileWorker(queueNewFiles, queueUploadedFiles);
-		//BooleanBinding  s = threadUpload.isAlive() && threadFilesearch.isAlive();
 	}
 	
 	@Override
@@ -33,7 +33,7 @@ public class FacebookUploader implements IFacebookUploader {
 
 	@Override
 	public void start(int checkInterval, String path, LocalDate startDate, String publishTimes) {
-		if((threadUpload == null && threadFilesearch == null) 
+		if((threadUpload == null && threadFilesearch == null)
 			|| (!threadUpload.isAlive() && !threadFilesearch.isAlive())) {
 			
 			uploadWorker.setData(checkInterval, startDate, publishTimes);
@@ -53,8 +53,13 @@ public class FacebookUploader implements IFacebookUploader {
 	}
 
 	@Override
-	public boolean isActive() {
-		return false;
+	public BooleanBinding isActive() {
+		return uploadWorker.isRunning().or(fileWorker.isRunning());
+	}
+	
+	@Override
+	public BooleanBinding isStopping() {
+		return uploadWorker.isRunning().isNotEqualTo(fileWorker.isRunning());
 	}
 	
 	@Override

@@ -19,7 +19,9 @@ import com.restfb.types.GraphResponse;
 import com.restfb.types.Page;
 
 import entities.IPicture;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import util.IUPloadWorker;
 
@@ -31,13 +33,14 @@ public class UploadWorker implements IUPloadWorker {
 	private FacebookClient fbClient;
 	private String pageID;
 	
-	private boolean isWorking;
+	private boolean work;
 	private int interval;
 	
 	private Queue<LocalTime> publishLocalTimes;	
 	private ZonedDateTime nextPublishDate;
 	
 	private final IntegerProperty numUploaded = new SimpleIntegerProperty(0);
+	private final BooleanProperty running = new SimpleBooleanProperty(false);
 	
 	public UploadWorker(Queue<IPicture> queueNewFiles, Queue<IPicture> queueUploadedFiles) {
 		this.queueNewFiles = queueNewFiles;
@@ -106,18 +109,21 @@ public class UploadWorker implements IUPloadWorker {
 	
 	@Override
 	public void run() {
-		isWorking = true;
+		running.set(true);
 		
-		while(isWorking) {
-			
-			uploadPicture(takePicture());
-			
+		numUploaded.set(0);		
+		work = true;		
+		while(work) {	
+			uploadPicture(takePicture());	
 			try {
 				Thread.sleep(interval);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
 		}
+		queueUploadedFiles.clear();
+		
+		running.set(false);
 	}
 
 	@Override
@@ -134,7 +140,7 @@ public class UploadWorker implements IUPloadWorker {
 
 	@Override
 	public void stop() {
-		isWorking = false;
+		work = false;
 		queueUploadedFiles.clear();
 	}
 
@@ -154,5 +160,10 @@ public class UploadWorker implements IUPloadWorker {
 	public IntegerProperty getNumUploads() {
         return numUploaded;
     }
+
+	@Override
+	public BooleanProperty isRunning() {
+		return running;
+	}
 }
 
