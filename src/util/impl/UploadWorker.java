@@ -18,7 +18,6 @@ import com.restfb.exception.FacebookException;
 import com.restfb.types.GraphResponse;
 import com.restfb.types.Page;
 
-import entities.IPicture;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -26,8 +25,8 @@ import javafx.beans.property.SimpleIntegerProperty;
 
 public class UploadWorker implements  Runnable {
 
-	private Queue<IPicture> queueNewFiles;
-	private Queue<IPicture> queueUploadedFiles;
+	private Queue<Picture> queueNewFiles;
+	private Queue<Picture> queueUploadedFiles;
 	
 	private FacebookClient fbClient;
 	private String pageID;
@@ -44,14 +43,14 @@ public class UploadWorker implements  Runnable {
 	private final BooleanProperty running = new SimpleBooleanProperty(false);
 	private final BooleanProperty finishing = new SimpleBooleanProperty(false);
 	
-	public UploadWorker(Queue<IPicture> queueNewFiles, Queue<IPicture> queueUploadedFiles, Object syncObj) {
+	public UploadWorker(Queue<Picture> queueNewFiles, Queue<Picture> queueUploadedFiles, Object syncObj) {
 		this.queueNewFiles = queueNewFiles;
 		this.queueUploadedFiles = queueUploadedFiles;
 		this.syncObj = syncObj;
 		publishLocalTimes = new LinkedList<>();
 	}
 	
-	private IPicture takePicture() {		
+	private Picture takePicture() {		
 		return queueNewFiles.poll();
 	}
 	
@@ -86,7 +85,7 @@ public class UploadWorker implements  Runnable {
 		}
 	}
 	
-	private boolean uploadPicture(IPicture picture) {
+	private boolean uploadPicture(Picture picture) {
 		if(picture != null) {
 			try {
 				byte[] fileContent = Files.readAllBytes((new File(picture.getFilePath()).toPath()));

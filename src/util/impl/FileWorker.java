@@ -6,8 +6,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Queue;
 
-import entities.IPicture;
-import entities.impl.Picture;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -15,8 +13,8 @@ import javafx.beans.property.SimpleIntegerProperty;
 
 public class FileWorker implements Runnable {
 
-	private Queue<IPicture> queueNewFiles;
-	private Queue<IPicture> queueUploadedFiles;
+	private Queue<Picture> queueNewFiles;
+	private Queue<Picture> queueUploadedFiles;
 	private List<String> alreadyFoundFiles;
 	
 	private boolean work;
@@ -32,7 +30,7 @@ public class FileWorker implements Runnable {
 	
 	private BooleanProperty uploadWorkerRunning;
 	
-	public FileWorker(Queue<IPicture> queueNewFiles, Queue<IPicture> queueUploadedFiles, Object syncObj, BooleanProperty uploadWorkerRunning) {
+	public FileWorker(Queue<Picture> queueNewFiles, Queue<Picture> queueUploadedFiles, Object syncObj, BooleanProperty uploadWorkerRunning) {
 		this.queueNewFiles = queueNewFiles;
 		this.queueUploadedFiles = queueUploadedFiles;
 		this.syncObj = syncObj;
@@ -48,7 +46,7 @@ public class FileWorker implements Runnable {
 		for (File file : listOfFiles) {
 		    if (file.isFile() && !alreadyFoundFiles.contains(file.getAbsolutePath())) {
 		    	alreadyFoundFiles.add(file.getAbsolutePath());
-				IPicture newPicture = new Picture(file.getAbsolutePath(), new Date());
+		    	Picture newPicture = new Picture(file.getAbsolutePath(), new Date());
 				queueNewFiles.add(newPicture);
 				numToUpload.set(numToUpload.get() + 1);
 		    }
@@ -56,7 +54,7 @@ public class FileWorker implements Runnable {
 	}
 	
 	private void removeUploadedPictures() {
-		IPicture uploadedPicture = queueUploadedFiles.poll();
+		Picture uploadedPicture = queueUploadedFiles.poll();
 		if(uploadedPicture != null) {
 			File oldPath = new File(uploadedPicture.getFilePath());	
 			File newPath = new File(subFolderPath + File.separator + oldPath.getName());

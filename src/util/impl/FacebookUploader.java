@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.util.LinkedList;
 import java.util.Queue;
 
-import entities.IPicture;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.IntegerProperty;
 import util.IFacebookUploader;
@@ -20,8 +19,8 @@ public class FacebookUploader implements IFacebookUploader {
 	private Object syncObj;
 	
 	public FacebookUploader() {
-		Queue<IPicture> queueNewFiles = new LinkedList<>();
-		Queue<IPicture> queueUploadedFiles = new LinkedList<>();
+		Queue<Picture> queueNewFiles = new LinkedList<>();
+		Queue<Picture> queueUploadedFiles = new LinkedList<>();
 		syncObj = new Object();
 		uploadWorker = new UploadWorker(queueNewFiles, queueUploadedFiles, syncObj);
 		fileWorker = new FileWorker(queueNewFiles, queueUploadedFiles, syncObj, uploadWorker.isRunning());
