@@ -13,6 +13,7 @@ import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import util.IFileWorker;
+import util.IUPloadWorker;
 
 public class FileWorker implements IFileWorker {
 
@@ -25,12 +26,19 @@ public class FileWorker implements IFileWorker {
 	private String folderPath;
 	private String subFolderPath;
 	
+	private Object syncObj;
+	
 	private final IntegerProperty numToUpload = new SimpleIntegerProperty(0);
 	private final BooleanProperty running = new SimpleBooleanProperty(false);
+	private final BooleanProperty finishing = new SimpleBooleanProperty(false);
 	
-	public FileWorker(Queue<IPicture> queueNewFiles, Queue<IPicture> queueUploadedFiles) {
+	private BooleanProperty uploadWorkerRunning;
+	
+	public FileWorker(Queue<IPicture> queueNewFiles, Queue<IPicture> queueUploadedFiles, Object syncObj, BooleanProperty uploadWorkerRunning) {
 		this.queueNewFiles = queueNewFiles;
 		this.queueUploadedFiles = queueUploadedFiles;
+		this.syncObj = syncObj;
+		this.uploadWorkerRunning = uploadWorkerRunning;
 		alreadyFoundFiles = new ArrayList<>();
 	}
 	
@@ -77,11 +85,24 @@ public class FileWorker implements IFileWorker {
 		alreadyFoundFiles.clear();
 		queueNewFiles.clear();
 		
+		if(uploadWorkerRunning.get()) {
+			synchronized (syncObj) {
+				try{
+					syncObj.wait();
+	            } catch(InterruptedException e){
+	                e.printStackTrace();
+	            }
+				removeUploadedPictures();
+			}
+		}
+		
 		running.set(false);
+		finishing.set(false);
 	}
 
 	@Override
 	public void stop() {
+		finishing.set(true);
 		work = false;
 		queueNewFiles.clear();
 	}
@@ -106,5 +127,10 @@ public class FileWorker implements IFileWorker {
 	@Override
 	public BooleanProperty isRunning() {
 		return running;
+	}
+	
+	@Override
+	public BooleanProperty isFinishing() {
+		return finishing;
 	}
 }

@@ -6,6 +6,7 @@ import java.util.Queue;
 
 import entities.IPicture;
 import javafx.beans.binding.BooleanBinding;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
 import util.IFacebookUploader;
 import util.IFileWorker;
@@ -19,11 +20,14 @@ public class FacebookUploader implements IFacebookUploader {
 	private Thread threadFilesearch;
 	private IFileWorker fileWorker;
 	
+	private Object syncObj;
+	
 	public FacebookUploader() {
 		Queue<IPicture> queueNewFiles = new LinkedList<>();
 		Queue<IPicture> queueUploadedFiles = new LinkedList<>();
-		uploadWorker = new UploadWorker(queueNewFiles, queueUploadedFiles);
-		fileWorker = new FileWorker(queueNewFiles, queueUploadedFiles);
+		syncObj = new Object();
+		uploadWorker = new UploadWorker(queueNewFiles, queueUploadedFiles, syncObj);
+		fileWorker = new FileWorker(queueNewFiles, queueUploadedFiles, syncObj, uploadWorker.isRunning());
 	}
 	
 	@Override
@@ -58,8 +62,8 @@ public class FacebookUploader implements IFacebookUploader {
 	}
 	
 	@Override
-	public BooleanBinding isStopping() {
-		return uploadWorker.isRunning().isNotEqualTo(fileWorker.isRunning());
+	public BooleanBinding isFinishing() {
+		return uploadWorker.isFinishing().or(fileWorker.isFinishing());
 	}
 	
 	@Override

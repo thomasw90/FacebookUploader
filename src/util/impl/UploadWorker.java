@@ -36,15 +36,19 @@ public class UploadWorker implements IUPloadWorker {
 	private boolean work;
 	private int interval;
 	
+	private Object syncObj;
+	
 	private Queue<LocalTime> publishLocalTimes;	
 	private ZonedDateTime nextPublishDate;
 	
 	private final IntegerProperty numUploaded = new SimpleIntegerProperty(0);
 	private final BooleanProperty running = new SimpleBooleanProperty(false);
+	private final BooleanProperty finishing = new SimpleBooleanProperty(false);
 	
-	public UploadWorker(Queue<IPicture> queueNewFiles, Queue<IPicture> queueUploadedFiles) {
+	public UploadWorker(Queue<IPicture> queueNewFiles, Queue<IPicture> queueUploadedFiles, Object syncObj) {
 		this.queueNewFiles = queueNewFiles;
 		this.queueUploadedFiles = queueUploadedFiles;
+		this.syncObj = syncObj;
 		publishLocalTimes = new LinkedList<>();
 	}
 	
@@ -121,9 +125,11 @@ public class UploadWorker implements IUPloadWorker {
 				e.printStackTrace();
 			}
 		}
-		queueUploadedFiles.clear();
-		
+		synchronized(syncObj) {
+			syncObj.notifyAll();
+        }		
 		running.set(false);
+		finishing.set(false);
 	}
 
 	@Override
@@ -140,6 +146,7 @@ public class UploadWorker implements IUPloadWorker {
 
 	@Override
 	public void stop() {
+		finishing.set(true);
 		work = false;
 		queueUploadedFiles.clear();
 	}
@@ -164,6 +171,11 @@ public class UploadWorker implements IUPloadWorker {
 	@Override
 	public BooleanProperty isRunning() {
 		return running;
+	}
+	
+	@Override
+	public BooleanProperty isFinishing() {
+		return finishing;
 	}
 }
 

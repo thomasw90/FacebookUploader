@@ -11,4 +11,5 @@ public interface IUPloadWorker extends Runnable {
 	void stop();
 	IntegerProperty getNumUploads();
 	BooleanProperty isRunning();
+	BooleanProperty isFinishing();
 }

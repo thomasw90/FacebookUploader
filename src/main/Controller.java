@@ -38,6 +38,8 @@ public class Controller implements Initializable {
 	@FXML
 	Text numToUpload;
 	@FXML
+	Text finishing;
+	@FXML
 	ProgressBar progressBarActive;
 	@FXML
 	ProgressBar progressBar;
@@ -53,16 +55,17 @@ public class Controller implements Initializable {
 		numToUpload.textProperty().bindBidirectional(uploader.getNumToUpload(), new NumberStringConverter());
 		progressBarActive.visibleProperty().bind(uploader.isActive());
 		progressBar.visibleProperty().bind(uploader.isActive().not());
-		startButton.disableProperty().bind(uploader.isActive().or(uploader.isStopping()));
-		stopButton.disableProperty().bind(uploader.isActive().not().or(uploader.isStopping()));
+		startButton.disableProperty().bind(uploader.isActive().or(uploader.isFinishing()));
+		stopButton.disableProperty().bind(uploader.isActive().not().or(uploader.isFinishing()));
+		finishing.visibleProperty().bind(uploader.isFinishing());
 	}
 	
 	public void login() {
 		if(uploader.login(accesstoken.getText(), pageID.getText())) {
-			loginNotification.setText("login erfolgreich");
+			loginNotification.setText("login successful");
 			loginNotification.setFill(Color.GREEN);
 		} else {
-			loginNotification.setText("login fehlgeschlagen");
+			loginNotification.setText("login failed");
 			loginNotification.setFill(Color.RED);
 		}
 	}

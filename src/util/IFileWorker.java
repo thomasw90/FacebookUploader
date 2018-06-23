@@ -8,4 +8,5 @@ public interface IFileWorker extends Runnable {
 	void stop();
 	IntegerProperty getNumToUpload();
 	BooleanProperty isRunning();
+	BooleanProperty isFinishing();
 }

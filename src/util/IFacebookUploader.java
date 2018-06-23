@@ -3,6 +3,7 @@ package util;
 import java.time.LocalDate;
 
 import javafx.beans.binding.BooleanBinding;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
 
 public interface IFacebookUploader {
@@ -10,7 +11,7 @@ public interface IFacebookUploader {
 	void start(int checkInterval, String path, LocalDate startDate, String publishTimes);
 	void stop();
 	BooleanBinding isActive();
-	BooleanBinding isStopping();
+	BooleanBinding isFinishing();
 	IntegerProperty getNumToUpload();
 	IntegerProperty getNumUploads();
 }
