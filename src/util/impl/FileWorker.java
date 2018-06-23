@@ -38,31 +38,6 @@ public class FileWorker implements Runnable {
 		alreadyFoundFiles = new ArrayList<>();
 	}
 	
-	private void checkForNewPictures() {
-		
-		File folder = new File(folderPath);
-		File[] listOfFiles = folder.listFiles();
-
-		for (File file : listOfFiles) {
-		    if (file.isFile() && !alreadyFoundFiles.contains(file.getAbsolutePath())) {
-		    	alreadyFoundFiles.add(file.getAbsolutePath());
-		    	Picture newPicture = new Picture(file.getAbsolutePath(), new Date());
-				queueNewFiles.add(newPicture);
-				numToUpload.set(numToUpload.get() + 1);
-		    }
-		}
-	}
-	
-	private void removeUploadedPictures() {
-		Picture uploadedPicture = queueUploadedFiles.poll();
-		if(uploadedPicture != null) {
-			File oldPath = new File(uploadedPicture.getFilePath());	
-			File newPath = new File(subFolderPath + File.separator + oldPath.getName());
-			oldPath.renameTo(newPath);
-			alreadyFoundFiles.remove(uploadedPicture.getFilePath());
-		}
-	}
-	
 	@Override
 	public void run() {
 		running.set(true);
@@ -123,5 +98,30 @@ public class FileWorker implements Runnable {
 	
 	public BooleanProperty isFinishing() {
 		return finishing;
+	}
+	
+	private void checkForNewPictures() {
+		
+		File folder = new File(folderPath);
+		File[] listOfFiles = folder.listFiles();
+
+		for (File file : listOfFiles) {
+		    if (file.isFile() && !alreadyFoundFiles.contains(file.getAbsolutePath())) {
+		    	alreadyFoundFiles.add(file.getAbsolutePath());
+		    	Picture newPicture = new Picture(file.getAbsolutePath(), new Date());
+				queueNewFiles.add(newPicture);
+				numToUpload.set(numToUpload.get() + 1);
+		    }
+		}
+	}
+	
+	private void removeUploadedPictures() {
+		Picture uploadedPicture = queueUploadedFiles.poll();
+		if(uploadedPicture != null) {
+			File oldPath = new File(uploadedPicture.getFilePath());	
+			File newPath = new File(subFolderPath + File.separator + oldPath.getName());
+			oldPath.renameTo(newPath);
+			alreadyFoundFiles.remove(uploadedPicture.getFilePath());
+		}
 	}
 }
