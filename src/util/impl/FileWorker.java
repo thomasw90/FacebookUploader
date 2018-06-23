@@ -12,10 +12,8 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
-import util.IFileWorker;
-import util.IUPloadWorker;
 
-public class FileWorker implements IFileWorker {
+public class FileWorker implements Runnable {
 
 	private Queue<IPicture> queueNewFiles;
 	private Queue<IPicture> queueUploadedFiles;
@@ -100,14 +98,12 @@ public class FileWorker implements IFileWorker {
 		finishing.set(false);
 	}
 
-	@Override
 	public void stop() {
 		finishing.set(true);
 		work = false;
 		queueNewFiles.clear();
 	}
 
-	@Override
 	public void setData(int checkInterval, String folderPath) {
 			this.folderPath = folderPath;
 			this.checkInterval = checkInterval;
@@ -119,17 +115,14 @@ public class FileWorker implements IFileWorker {
 			subFolderPath = subfolder.toString();
 	}
 	
-	@Override
 	public IntegerProperty getNumToUpload() {
         return numToUpload;
     }
 
-	@Override
 	public BooleanProperty isRunning() {
 		return running;
 	}
 	
-	@Override
 	public BooleanProperty isFinishing() {
 		return finishing;
 	}

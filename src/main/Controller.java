@@ -71,10 +71,7 @@ public class Controller implements Initializable {
 	}
 	
 	public void start() {	
-		try {
-			uploader.start(CHECKINTERVALL, path.getText(), datePicker.getValue(), publishTimes.getText());
-		} catch(NumberFormatException e){
-		}
+		uploader.start(CHECKINTERVALL, path.getText(), datePicker.getValue(), publishTimes.getText());
 	}
 	
 	public void stop() {

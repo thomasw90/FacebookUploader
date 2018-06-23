@@ -6,19 +6,16 @@ import java.util.Queue;
 
 import entities.IPicture;
 import javafx.beans.binding.BooleanBinding;
-import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
 import util.IFacebookUploader;
-import util.IFileWorker;
-import util.IUPloadWorker;
 
 public class FacebookUploader implements IFacebookUploader {
 
 	private Thread threadUpload;
-	private IUPloadWorker uploadWorker;
+	private UploadWorker uploadWorker;
 	
 	private Thread threadFilesearch;
-	private IFileWorker fileWorker;
+	private FileWorker fileWorker;
 	
 	private Object syncObj;
 	

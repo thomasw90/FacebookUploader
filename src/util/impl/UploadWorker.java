@@ -23,9 +23,8 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
-import util.IUPloadWorker;
 
-public class UploadWorker implements IUPloadWorker {
+public class UploadWorker implements  Runnable {
 
 	private Queue<IPicture> queueNewFiles;
 	private Queue<IPicture> queueUploadedFiles;
@@ -132,7 +131,6 @@ public class UploadWorker implements IUPloadWorker {
 		finishing.set(false);
 	}
 
-	@Override
 	public boolean login(String token, String pageID) {
 		this.pageID = pageID;		
 		fbClient = new DefaultFacebookClient(token, Version.VERSION_2_6);
@@ -144,14 +142,12 @@ public class UploadWorker implements IUPloadWorker {
 		}
 	}
 
-	@Override
 	public void stop() {
 		finishing.set(true);
 		work = false;
 		queueUploadedFiles.clear();
 	}
 
-	@Override
 	public void setData(int interval, LocalDate startDate, String publishTimes) {
 		this.interval = interval;
 				
@@ -163,17 +159,14 @@ public class UploadWorker implements IUPloadWorker {
 		}
 	}
 	
-	@Override
 	public IntegerProperty getNumUploads() {
         return numUploaded;
     }
 
-	@Override
 	public BooleanProperty isRunning() {
 		return running;
 	}
 	
-	@Override
 	public BooleanProperty isFinishing() {
 		return finishing;
 	}
