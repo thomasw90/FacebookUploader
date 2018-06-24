@@ -32,10 +32,10 @@ public class UploadWorker implements  Runnable {
 	private Object syncObj;
 	
 	/** Queue that contains pictures they have to be uploaded. Shared between threads */
-	private Queue<Picture> queueNewFiles;
+	private Queue<String> queueNewFiles;
 	
 	/** Queue that contains pictures they have already been uploaded. Shared between threads */
-	private Queue<Picture> queueUploadedFiles;
+	private Queue<String> queueUploadedFiles;
 	
 	/** Used to communicate with Facebook */
 	private FacebookClient fbClient;
@@ -70,7 +70,7 @@ public class UploadWorker implements  Runnable {
 	 * @param queueUploadedFiles Queue that contains pictures they have already been uploaded. Shared between threads
 	 * @param syncObj Object that is used for synchronizing stop of work. Shared between threads
 	 */
-	public UploadWorker(Queue<Picture> queueNewFiles, Queue<Picture> queueUploadedFiles, Object syncObj) {
+	public UploadWorker(Queue<String> queueNewFiles, Queue<String> queueUploadedFiles, Object syncObj) {
 		this.queueNewFiles = queueNewFiles;
 		this.queueUploadedFiles = queueUploadedFiles;
 		this.syncObj = syncObj;
@@ -198,9 +198,9 @@ public class UploadWorker implements  Runnable {
 	/** Uploads all available pictures to Facebook */
 	private void uploadPictures() {
 		while(!queueNewFiles.isEmpty()) {
-			Picture picture = queueNewFiles.poll();
+			String picture = queueNewFiles.poll();
 			try {
-				byte[] fileContent = Files.readAllBytes((new File(picture.getFilePath()).toPath()));
+				byte[] fileContent = Files.readAllBytes((new File(picture).toPath()));
 				if(nextPublishDate != null) {
 					fbClient.publish(pageID + "/photos",
 									 GraphResponse.class,
