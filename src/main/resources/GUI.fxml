@@ -38,11 +38,16 @@
                   <Insets />
                </VBox.margin>
             </HBox>
-            <TextField fx:id="path" promptText="Directory" text="C:\Users\Thomas\Desktop\uploads">
-               <VBox.margin>
-                  <Insets />
-               </VBox.margin>
-            </TextField>
+            <HBox>
+               <children>
+                  <TextField fx:id="path" editable="false" promptText="Directory" text="C:\Users\Thomas\Desktop\uploads" HBox.hgrow="ALWAYS" />
+                  <Button mnemonicParsing="false" onAction="#openDirChooser" text="...">
+                     <HBox.margin>
+                        <Insets left="5.0" />
+                     </HBox.margin>
+                  </Button>
+               </children>
+            </HBox>
             <Separator prefWidth="200.0">
                <VBox.margin>
                   <Insets bottom="5.0" top="5.0" />

@@ -18,6 +18,8 @@ public class Main extends Application {
 			FXMLLoader loader = new FXMLLoader();
 			loader.setLocation(getClass().getResource("resources/GUI.fxml"));
 			Parent root = loader.load();
+			Controller controller = loader.getController();
+			controller.setStage(primaryStage);
 			Scene scene = new Scene(root);
 			primaryStage.setScene(scene);
 			primaryStage.show();
