@@ -23,113 +23,90 @@ import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 
+/**
+ * Contains functionality for uploading pictures to Facebook in an own thread
+ */
 public class UploadWorker implements  Runnable {
 
-	private Queue<Picture> queueNewFiles;
-	private Queue<Picture> queueUploadedFiles;
-	
-	private FacebookClient fbClient;
-	private String pageID;
-	
-	private boolean work;
-	private int interval;
-	
+	/** Object that is used for synchronizing stop of work. Shared between threads */
 	private Object syncObj;
 	
-	private Queue<LocalTime> publishLocalTimes;	
+	/** Queue that contains pictures they have to be uploaded. Shared between threads */
+	private Queue<String> queueNewFiles;
+	
+	/** Queue that contains pictures they have already been uploaded. Shared between threads */
+	private Queue<String> queueUploadedFiles;
+	
+	/** Used to communicate with Facebook */
+	private FacebookClient fbClient;
+	
+	/** Release date for the next picture */
 	private ZonedDateTime nextPublishDate;
 	
+	/** Queue that contains repeating release times to calculate release DateTime */
+	private Queue<LocalTime> publishLocalTimes;	
+	
+	/** Name of the Facebook-Page the pictures have to be uploaded */
+	private String pageID;
+	
+	/** Seconds between checks for new pictures */
+	private int interval;
+	
+	/** Flag to terminate thread */
+	private boolean work;
+		
+	/** Amount of uploaded files since start */
 	private final IntegerProperty numUploaded = new SimpleIntegerProperty(0);
+	
+	/** Flag if thread is working */
 	private final BooleanProperty running = new SimpleBooleanProperty(false);
+	
+	/** Flag if thread is finishing upload of last file */
 	private final BooleanProperty finishing = new SimpleBooleanProperty(false);
 	
-	public UploadWorker(Queue<Picture> queueNewFiles, Queue<Picture> queueUploadedFiles, Object syncObj) {
+	/** 
+	 * This is the constructor 
+	 * @param queueNewFiles Queue that contains pictures they have to be uploaded. Shared between threads
+	 * @param queueUploadedFiles Queue that contains pictures they have already been uploaded. Shared between threads
+	 * @param syncObj Object that is used for synchronizing stop of work. Shared between threads
+	 */
+	public UploadWorker(Queue<String> queueNewFiles, Queue<String> queueUploadedFiles, Object syncObj) {
 		this.queueNewFiles = queueNewFiles;
 		this.queueUploadedFiles = queueUploadedFiles;
 		this.syncObj = syncObj;
 		publishLocalTimes = new LinkedList<>();
 	}
 	
-	private Picture takePicture() {		
-		return queueNewFiles.poll();
-	}
-	
-	private void parseStringToLocalTimes(String s) {
-		String[] times = s.split(",");
-		for(String time : times) {
-			String[] hoursAndMinutes = time.split(":");
-			if(hoursAndMinutes.length == 2) {
-				try {
-					LocalTime newTime = LocalTime.of(Integer.parseInt(hoursAndMinutes[0].replace(" ", "")), Integer.parseInt(hoursAndMinutes[1].replace(" ", "")));
-					publishLocalTimes.add(newTime);
-				} catch(Exception e) {}
-			}
-		}
-	}
-	
-	private LocalTime getNextTime() {
-		LocalTime nextPublishTime = publishLocalTimes.poll();
-		publishLocalTimes.add(nextPublishTime);
-		return nextPublishTime;
-	}
-	
-	private void setNextPublishDate() {
-		LocalTime lastPublishTime = nextPublishDate.toLocalTime();
-		LocalTime nextPublishTime = getNextTime();
-		
-		if(!nextPublishTime.isAfter(lastPublishTime)) {
-			nextPublishDate = nextPublishDate.plusDays(1);
-			nextPublishDate = nextPublishDate.minusHours(lastPublishTime.getHour() - nextPublishTime.getHour());
-		} else {
-			nextPublishDate = nextPublishDate.plusHours(nextPublishTime.getHour() - lastPublishTime.getHour());
-		}
-	}
-	
-	private boolean uploadPicture(Picture picture) {
-		if(picture != null) {
-			try {
-				byte[] fileContent = Files.readAllBytes((new File(picture.getFilePath()).toPath()));
-				if(nextPublishDate != null) {
-					fbClient.publish(pageID + "/photos",
-									 GraphResponse.class,
-									 BinaryAttachment.with("Test.jpg", fileContent),
-									 Parameter.with("published", "false"),
-									 Parameter.with("scheduled_publish_time", String.valueOf(nextPublishDate.toEpochSecond())));
-					setNextPublishDate();
-				} else {
-					fbClient.publish(pageID + "/photos",
-									 GraphResponse.class,
-									 BinaryAttachment.with("Test.jpg", fileContent));
-				}			 
-				queueUploadedFiles.add(picture);
-				numUploaded.set(numUploaded.get() + 1);
-				return true;
-			} catch (Exception e) {}
-		}
-		return false;
-	}
-	
+	/** Job that runs inside the thread */
 	@Override
 	public void run() {
 		running.set(true);
-		
 		numUploaded.set(0);		
-		work = true;		
+		work = true;
+		
 		while(work) {	
-			uploadPicture(takePicture());	
+			uploadPictures();
 			try {
 				Thread.sleep(interval);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
 		}
+		
+		// notify FileWorker that uploads are done
 		synchronized(syncObj) {
 			syncObj.notifyAll();
-        }		
+        }	
+		
 		running.set(false);
 		finishing.set(false);
 	}
 
+	/** 
+	 * Sets Facebook login data and validates them
+	 * @param token Access-Token
+	 * @param pageID Name of the Facebook-Page the pictures have to be uploaded
+	 */
 	public boolean login(String token, String pageID) {
 		this.pageID = pageID;		
 		fbClient = new DefaultFacebookClient(token, Version.VERSION_2_6);
@@ -141,15 +118,20 @@ public class UploadWorker implements  Runnable {
 		}
 	}
 
+	/** Stops uploading. If file is currently uploading it will stop after this file */
 	public void stop() {
 		finishing.set(true);
 		work = false;
-		queueUploadedFiles.clear();
 	}
 
+	/** 
+	 * Sets data before thread is starting work
+	 * @param interval Seconds between checks for new pictures
+	 * @param startDate Day of the first picture release
+	 * @param publishTimes Times of picture releases each day
+	 */
 	public void setData(int interval, LocalDate startDate, String publishTimes) {
-		this.interval = interval;
-				
+		this.interval = interval;		
 		if(startDate != null && !publishTimes.isEmpty()) {
 			parseStringToLocalTimes(publishTimes);			
 			nextPublishDate = startDate.atTime(getNextTime()).atZone(ZoneId.systemDefault());
@@ -158,16 +140,85 @@ public class UploadWorker implements  Runnable {
 		}
 	}
 	
+	/** Getter for property */
 	public IntegerProperty getNumUploads() {
         return numUploaded;
     }
 
+	/** Getter for property */
 	public BooleanProperty isRunning() {
 		return running;
 	}
 	
+	/** Getter for property */
 	public BooleanProperty isFinishing() {
 		return finishing;
+	}
+	
+	/** 
+	 * Parses a string with the pattern "16:00, 18:00, 19:30" to LocalTimes
+	 * @param multipleTimes Times to parse
+	 */
+	private void parseStringToLocalTimes(String multipleTimes) {
+		String[] times = multipleTimes.split(",");
+		for(String time : times) {
+			String[] hoursAndMinutes = time.split(":");
+			if(hoursAndMinutes.length == 2) {
+				try {
+					LocalTime newTime = LocalTime.of(Integer.parseInt(hoursAndMinutes[0].replace(" ", "")), Integer.parseInt(hoursAndMinutes[1].replace(" ", "")));
+					publishLocalTimes.add(newTime);
+				} catch(Exception e) {}
+			}
+		}
+	}
+	
+	/** 
+	 * Get next time of the queue
+	 * @return Next release time
+	 */
+	private LocalTime getNextTime() {
+		LocalTime nextPublishTime = publishLocalTimes.poll();
+		publishLocalTimes.add(nextPublishTime);
+		return nextPublishTime;
+	}
+	
+	/** Calculates and sets the release date and time for the next picture */
+	private void calculateNextPublishDate() {
+		LocalTime lastPublishTime = nextPublishDate.toLocalTime();
+		LocalTime nextPublishTime = getNextTime();
+		
+		if(!nextPublishTime.isAfter(lastPublishTime)) {
+			nextPublishDate = nextPublishDate.plusDays(1);
+			nextPublishDate = nextPublishDate.minusHours(lastPublishTime.getHour() - nextPublishTime.getHour());
+		} else {
+			nextPublishDate = nextPublishDate.plusHours(nextPublishTime.getHour() - lastPublishTime.getHour());
+		}
+	}
+	
+	/** Uploads all available pictures to Facebook */
+	private void uploadPictures() {
+		while(!queueNewFiles.isEmpty()) {
+			String picture = queueNewFiles.poll();
+			try {
+				byte[] fileContent = Files.readAllBytes((new File(picture).toPath()));
+				if(nextPublishDate != null) {
+					fbClient.publish(pageID + "/photos",
+									 GraphResponse.class,
+									 BinaryAttachment.with("Test.jpg", fileContent),
+									 Parameter.with("published", "false"),
+									 Parameter.with("scheduled_publish_time", String.valueOf(nextPublishDate.toEpochSecond())));
+					calculateNextPublishDate();
+				} else {
+					fbClient.publish(pageID + "/photos",
+									 GraphResponse.class,
+									 BinaryAttachment.with("Test.jpg", fileContent));
+				}			 
+				queueUploadedFiles.add(picture);
+				numUploaded.set(numUploaded.get() + 1);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
 	}
 }
 
