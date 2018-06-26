@@ -7,10 +7,10 @@ import java.util.ResourceBundle;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TextField;
-import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
@@ -52,6 +52,8 @@ public class Controller implements Initializable {
 	Button startButton;
 	@FXML
 	Button stopButton;
+	@FXML
+	ComboBox<String> pageNames;
 		
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
@@ -64,6 +66,7 @@ public class Controller implements Initializable {
 		startButton.disableProperty().bind(uploader.isActive().or(uploader.isFinishing()));
 		stopButton.disableProperty().bind(uploader.isActive().not().or(uploader.isFinishing()));
 		finishing.visibleProperty().bind(uploader.isFinishing());
+		pageNames.setItems(uploader.getPageNames());
 	}
 	
 	public void setStage(Stage primaryStage) {
@@ -71,17 +74,11 @@ public class Controller implements Initializable {
 	}
 	
 	public void login() {
-		if(uploader.login(accesstoken.getText(), pageID.getText())) {
-			loginNotification.setText("login successful");
-			loginNotification.setFill(Color.GREEN);
-		} else {
-			loginNotification.setText("login failed");
-			loginNotification.setFill(Color.RED);
-		}
+		uploader.login(accesstoken.getText());
 	}
 	
 	public void start() {	
-		uploader.start(CHECKINTERVALL, path.getText(), datePicker.getValue(), publishTimes.getText());
+		uploader.start(pageNames.getValue(), CHECKINTERVALL, path.getText(), datePicker.getValue(), publishTimes.getText());
 	}
 	
 	public void stop() {

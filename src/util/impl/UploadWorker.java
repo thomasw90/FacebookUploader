@@ -6,10 +6,13 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.Queue;
 
 import com.restfb.BinaryAttachment;
+import com.restfb.Connection;
 import com.restfb.DefaultFacebookClient;
 import com.restfb.FacebookClient;
 import com.restfb.Parameter;
@@ -20,8 +23,11 @@ import com.restfb.types.Page;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.ListProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleListProperty;
+import javafx.collections.FXCollections;
 
 /**
  * Contains functionality for uploading pictures to Facebook in an own thread
@@ -64,6 +70,12 @@ public class UploadWorker implements  Runnable {
 	/** Flag if thread is finishing upload of last file */
 	private final BooleanProperty finishing = new SimpleBooleanProperty(false);
 	
+	/** Contains all available names of Facebook fanpages after successful login */
+	private final ListProperty<String> pageNames = new SimpleListProperty<>(FXCollections.<String> observableArrayList());
+	
+	/** Map to save Facebook fanpage name with ID */
+	private Map<String, String> nameWithIDs = new HashMap<>();
+	
 	/** 
 	 * This is the constructor 
 	 * @param queueNewFiles Queue that contains pictures they have to be uploaded. Shared between threads
@@ -105,13 +117,16 @@ public class UploadWorker implements  Runnable {
 	/** 
 	 * Sets Facebook login data and validates them
 	 * @param token Access-Token
-	 * @param pageID Name of the Facebook-Page the pictures have to be uploaded
 	 */
-	public boolean login(String token, String pageID) {
-		this.pageID = pageID;		
+	public boolean login(String token) {
+		pageNames.clear();
 		fbClient = new DefaultFacebookClient(token, Version.VERSION_2_6);
 		try {
-			fbClient.fetchObject(pageID, Page.class);
+			Connection<Page> pages = fbClient.fetchConnection("me/accounts", Page.class);
+			for(Page page : pages.getData()) {
+				nameWithIDs.put(page.getName(), page.getId());
+				pageNames.add(page.getName());
+			}			
 			return true;
 		} catch(FacebookException e) {
 			return false;
@@ -126,11 +141,13 @@ public class UploadWorker implements  Runnable {
 
 	/** 
 	 * Sets data before thread is starting work
+	 * @param pageName Name of Facebook fanpage
 	 * @param interval Seconds between checks for new pictures
 	 * @param startDate Day of the first picture release
 	 * @param publishTimes Times of picture releases each day
 	 */
-	public void setData(int interval, LocalDate startDate, String publishTimes) {
+	public void setData(String pageName, int interval, LocalDate startDate, String publishTimes) {
+		this.pageID = nameWithIDs.get(pageName);
 		this.interval = interval;		
 		if(startDate != null && !publishTimes.isEmpty()) {
 			parseStringToLocalTimes(publishTimes);			
@@ -153,6 +170,11 @@ public class UploadWorker implements  Runnable {
 	/** Getter for property */
 	public BooleanProperty isFinishing() {
 		return finishing;
+	}
+	
+	/** Getter for property */
+	public ListProperty<String> getPageNames() {
+		return pageNames;
 	}
 	
 	/** 
