@@ -4,15 +4,15 @@ import java.time.LocalDate;
 
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.ListProperty;
 
 public interface IFacebookUploader {
 	
 	/** 
 	 * Sets Facebook login data
 	 * @param token Access-Token
-	 * @param pageID Name of the Facebook-Page the pictures have to be uploaded
 	 */
-	boolean login(String token, String pageID);
+	boolean login(String token);
 	
 	/** 
 	 * Starts searching and uploading in separated threads
@@ -21,7 +21,7 @@ public interface IFacebookUploader {
 	 * @param startDate Day of the first picture release
 	 * @param publishTimes Times of picture releases each day
 	 */
-	void start(int interval, String folderPath, LocalDate startDate, String publishTimes);
+	void start(String pageName, int interval, String folderPath, LocalDate startDate, String publishTimes);
 	
 	/** Stops searching and uploading asynchronous */
 	void stop();
@@ -37,4 +37,7 @@ public interface IFacebookUploader {
 	
 	/** Getter for property */
 	IntegerProperty getNumUploads();
+	
+	/** Getter for property */
+	ListProperty<String> getPageNames();
 }

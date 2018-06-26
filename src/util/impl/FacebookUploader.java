@@ -6,6 +6,7 @@ import java.util.Queue;
 
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.ListProperty;
 import util.IFacebookUploader;
 
 public class FacebookUploader implements IFacebookUploader {
@@ -32,16 +33,16 @@ public class FacebookUploader implements IFacebookUploader {
 	}
 	
 	@Override
-	public boolean login(String token, String pageID) {
-		return uploadWorker.login(token, pageID);
+	public boolean login(String token) {
+		return uploadWorker.login(token);
 	}
 
 	@Override
-	public void start(int interval, String folderPath, LocalDate startDate, String publishTimes) {
+	public void start(String pageName, int interval, String folderPath, LocalDate startDate, String publishTimes) {
 		if((threadUpload == null && threadFilesearch == null)
 			|| (!threadUpload.isAlive() && !threadFilesearch.isAlive())) {
 			
-			uploadWorker.setData(interval, startDate, publishTimes);
+			uploadWorker.setData(pageName, interval, startDate, publishTimes);
 			threadUpload = new Thread(uploadWorker);
 			threadUpload.start();
 			
@@ -76,4 +77,9 @@ public class FacebookUploader implements IFacebookUploader {
 	public IntegerProperty getNumToUpload() {
         return fileWorker.getNumToUpload();
     }
+
+	@Override
+	public ListProperty<String> getPageNames() {
+		return uploadWorker.getPageNames();
+	}
 }
