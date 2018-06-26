@@ -14,13 +14,11 @@ import java.util.Queue;
 import com.restfb.BinaryAttachment;
 import com.restfb.Connection;
 import com.restfb.DefaultFacebookClient;
-import com.restfb.Facebook;
 import com.restfb.FacebookClient;
 import com.restfb.Parameter;
 import com.restfb.Version;
 import com.restfb.exception.FacebookException;
 import com.restfb.types.GraphResponse;
-import com.restfb.types.Group;
 import com.restfb.types.Page;
 
 import javafx.beans.property.BooleanProperty;
@@ -119,7 +117,6 @@ public class UploadWorker implements  Runnable {
 	/** 
 	 * Sets Facebook login data and validates them
 	 * @param token Access-Token
-	 * @param pageID Name of the Facebook-Page the pictures have to be uploaded
 	 */
 	public boolean login(String token) {
 		pageNames.clear();
@@ -144,6 +141,7 @@ public class UploadWorker implements  Runnable {
 
 	/** 
 	 * Sets data before thread is starting work
+	 * @param pageName Name of Facebook fanpage
 	 * @param interval Seconds between checks for new pictures
 	 * @param startDate Day of the first picture release
 	 * @param publishTimes Times of picture releases each day

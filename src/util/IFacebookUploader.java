@@ -16,6 +16,7 @@ public interface IFacebookUploader {
 	
 	/** 
 	 * Starts searching and uploading in separated threads
+	 * @param pageName Name of Facebook fanepage
 	 * @param interval Seconds between checks for new pictures
 	 * @param folderPath Path of the directory of new pictures
 	 * @param startDate Day of the first picture release
