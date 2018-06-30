@@ -53,7 +53,7 @@ public class UploadWorker implements  Runnable {
 	private Queue<LocalTime> publishLocalTimes;	
 	
 	/** Name of the Facebook-Page the pictures have to be uploaded */
-	private String pageID;
+	private String pageName;
 	
 	/** Seconds between checks for new pictures */
 	private int interval;
@@ -74,7 +74,7 @@ public class UploadWorker implements  Runnable {
 	private final ListProperty<String> pageNames = new SimpleListProperty<>(FXCollections.<String> observableArrayList());
 	
 	/** Map to save Facebook fanpage name with ID */
-	private Map<String, String> nameWithIDs = new HashMap<>();
+	private Map<String, Page> nameWithPage = new HashMap<>();
 	
 	/** 
 	 * This is the constructor 
@@ -95,6 +95,8 @@ public class UploadWorker implements  Runnable {
 		running.set(true);
 		numUploaded.set(0);		
 		work = true;
+		
+		fbClient = new DefaultFacebookClient(nameWithPage.get(pageName).getAccessToken(), Version.VERSION_2_6);
 		
 		while(work) {	
 			uploadPictures();
@@ -124,7 +126,7 @@ public class UploadWorker implements  Runnable {
 		try {
 			Connection<Page> pages = fbClient.fetchConnection("me/accounts", Page.class);
 			for(Page page : pages.getData()) {
-				nameWithIDs.put(page.getName(), page.getId());
+				nameWithPage.put(page.getName(), page);
 				pageNames.add(page.getName());
 			}			
 			return true;
@@ -147,7 +149,7 @@ public class UploadWorker implements  Runnable {
 	 * @param publishTimes Times of picture releases each day
 	 */
 	public void setData(String pageName, int interval, LocalDate startDate, String publishTimes) {
-		this.pageID = nameWithIDs.get(pageName);
+		this.pageName = pageName;
 		this.interval = interval;		
 		if(startDate != null && !publishTimes.isEmpty()) {
 			parseStringToLocalTimes(publishTimes);			
@@ -224,14 +226,14 @@ public class UploadWorker implements  Runnable {
 			try {
 				byte[] fileContent = Files.readAllBytes((new File(picture).toPath()));
 				if(nextPublishDate != null) {
-					fbClient.publish(pageID + "/photos",
+					fbClient.publish(nameWithPage.get(pageName).getId() + "/photos",
 									 GraphResponse.class,
 									 BinaryAttachment.with("Test.jpg", fileContent),
 									 Parameter.with("published", "false"),
 									 Parameter.with("scheduled_publish_time", String.valueOf(nextPublishDate.toEpochSecond())));
 					calculateNextPublishDate();
 				} else {
-					fbClient.publish(pageID + "/photos",
+					fbClient.publish(nameWithPage.get(pageName).getId() + "/photos",
 									 GraphResponse.class,
 									 BinaryAttachment.with("Test.jpg", fileContent));
 				}			 
