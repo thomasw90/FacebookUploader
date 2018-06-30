@@ -1,11 +1,9 @@
-package main;
+package GUI.impl.Controllers;
 
 import java.io.File;
-import java.net.URL;
-import java.util.ResourceBundle;
 
+import GUI.PaneSwitcher;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
@@ -16,18 +14,17 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import javafx.util.converter.NumberStringConverter;
 import util.IFacebookUploader;
-import util.impl.FacebookUploader;
 
-public class Controller implements Initializable {
+public class UploaderController implements IController {
 
 	private final static int CHECKINTERVALL = 2000;
 	
 	private IFacebookUploader uploader;
 	private DirectoryChooser dirChooser;
 	private Stage primaryStage;
+	@SuppressWarnings("unused")
+	private GUI.PaneSwitcher switcher;
 	
-	@FXML
-	private TextField accesstoken;
 	@FXML
 	private TextField pageID;
 	@FXML
@@ -54,10 +51,12 @@ public class Controller implements Initializable {
 	Button stopButton;
 	@FXML
 	ComboBox<String> pageNames;
-		
+	
 	@Override
-	public void initialize(URL arg0, ResourceBundle arg1) {
-		uploader = new FacebookUploader();
+	public void init(Stage primaryStage, PaneSwitcher switcher, IFacebookUploader uploader) {
+		this.primaryStage = primaryStage;
+		this.switcher = switcher;
+		this.uploader = uploader;
 		dirChooser = new DirectoryChooser();
 		numUploads.textProperty().bindBidirectional(uploader.getNumUploads(), new NumberStringConverter());
 		numToUpload.textProperty().bindBidirectional(uploader.getNumToUpload(), new NumberStringConverter());
@@ -67,14 +66,6 @@ public class Controller implements Initializable {
 		stopButton.disableProperty().bind(uploader.isActive().not().or(uploader.isFinishing()));
 		finishing.visibleProperty().bind(uploader.isFinishing());
 		pageNames.setItems(uploader.getPageNames());
-	}
-	
-	public void setStage(Stage primaryStage) {
-		this.primaryStage = primaryStage;
-	}
-	
-	public void login() {
-		uploader.login(accesstoken.getText());
 	}
 	
 	public void start() {	

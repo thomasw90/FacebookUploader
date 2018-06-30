@@ -8,21 +8,19 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="main.Controller">
+<AnchorPane minWidth="350.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GUI.impl.Controllers.UploaderController">
    <children>
-      <VBox alignment="TOP_CENTER" prefWidth="300.0" spacing="5.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0">
+      <VBox alignment="TOP_CENTER" spacing="5.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0">
          <children>
-            <TextField fx:id="accesstoken" promptText="Access-Token" text="EAACEdEose0cBAJ6NRVZCZA3M1y1DngymHEHKGjdByeCfb8FWCx0ZAglw9exE99scOnHqpcN3o7u54ytFTOBPFLf6mJ3yINc4FoTMJ0xeJQck56JknfCsXoCPVASWwDckHtuCFBi93P04OXOHPEbnHggwcSPNCh53Htsbx9koqX50j6QM6TIgEwHXfMyM1CnQOO4YFZCEnAZDZD" />
-            <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#login" text="Login" />
             <ComboBox fx:id="pageNames" maxWidth="1.7976931348623157E308" />
             <Separator>
                <VBox.margin>
                   <Insets bottom="5.0" top="5.0" />
                </VBox.margin>
             </Separator>
-            <HBox maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS">
+            <HBox VBox.vgrow="ALWAYS">
                <children>
-                  <TextField fx:id="publishTimes" maxWidth="1.7976931348623157E308" promptText="Time: 16:00, 18:30" text="16:00, 18:00, 20:00" HBox.hgrow="ALWAYS" />
+                  <TextField fx:id="publishTimes" maxWidth="1.7976931348623157E308" promptText="Time: 16:00, 18:30" HBox.hgrow="ALWAYS" />
                   <DatePicker fx:id="datePicker" maxWidth="1.7976931348623157E308" promptText="Startdate" HBox.hgrow="ALWAYS">
                      <HBox.margin>
                         <Insets left="5.0" />
@@ -48,7 +46,7 @@
                   <Insets bottom="5.0" top="5.0" />
                </VBox.margin>
             </Separator>
-            <HBox alignment="CENTER" maxWidth="1.7976931348623157E308">
+            <HBox alignment="CENTER">
                <children>
                   <Text fx:id="numUploads" strokeType="OUTSIDE" strokeWidth="0.0" text="0">
                      <HBox.margin>
@@ -79,7 +77,7 @@
                   <Text fx:id="finishing" strokeType="OUTSIDE" strokeWidth="0.0" text="Finishing current file" />
                </children>
             </StackPane>
-            <HBox alignment="TOP_CENTER" maxWidth="1.7976931348623157E308" spacing="5.0">
+            <HBox alignment="TOP_CENTER" spacing="5.0">
                <children>
                   <Button fx:id="startButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#start" text="Start" HBox.hgrow="ALWAYS" />
                   <Button fx:id="stopButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#stop" text="Stop" HBox.hgrow="ALWAYS" />
