@@ -96,7 +96,7 @@ public class UploadWorker implements  Runnable {
 		numUploaded.set(0);		
 		work = true;
 		
-		fbClient = new DefaultFacebookClient(nameWithPage.get(pageName).getAccessToken(), Version.VERSION_2_6);
+		fbClient = new DefaultFacebookClient(nameWithPage.get(pageName).getAccessToken(), Version.VERSION_3_0);
 		
 		while(work) {	
 			uploadPictures();
