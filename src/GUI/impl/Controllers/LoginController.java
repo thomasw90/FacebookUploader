@@ -9,11 +9,16 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import util.IFacebookUploader;
 
+
 public class LoginController implements IController {
 
 	@SuppressWarnings("unused")
 	private Stage primaryStage;
+	
+	/** Is used to switch Pane on login */
 	private PaneSwitcher switcher;
+	
+	/** Interface to the FacebookUploader */
 	private IFacebookUploader uploader;
 	
 	@FXML
@@ -28,6 +33,7 @@ public class LoginController implements IController {
 		this.uploader = uploader;
 	}
 	
+	/** Tries to login with Access-Token. Changes Pane on success, throws error on failure */
 	public void login() {
 		if(uploader.login(accesstoken.getText())) {
 			switcher.changeScreen(ScreenType.UPLOADER);

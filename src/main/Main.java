@@ -2,21 +2,20 @@ package main;
 
 	
 import GUI.PaneSwitcher;
+import GUI.impl.ScreenType;
 import javafx.application.Application;
 import javafx.stage.Stage;
 import util.IFacebookUploader;
 import util.impl.FacebookUploader;
 
 public class Main extends Application {
-
-	IFacebookUploader facebookUploader;
-	PaneSwitcher switcher;
 	
 	@Override
 	public void start(Stage primaryStage) {
 		try {		
-			facebookUploader = new FacebookUploader();
-			switcher = new PaneSwitcher(primaryStage, facebookUploader);
+			IFacebookUploader facebookUploader = new FacebookUploader();
+			PaneSwitcher switcher = new PaneSwitcher(primaryStage, facebookUploader);
+			switcher.changeScreen(ScreenType.LOGIN);
 			primaryStage.show();
 			primaryStage.setTitle("Facebook Picture Uploader");			
 		} catch(Exception e) {

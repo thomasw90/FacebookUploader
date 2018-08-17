@@ -17,13 +17,17 @@ import util.IFacebookUploader;
 
 public class UploaderController implements IController {
 
+	/** milliseconds between checks for new files in a directory */
 	private final static int CHECKINTERVALL = 2000;
 	
+	/** Interface to the FacebookUploader */
 	private IFacebookUploader uploader;
+	
+	/** Dialog to select directory */
 	private DirectoryChooser dirChooser;
+	
+	/** Stage the Pane/Scene is located */
 	private Stage primaryStage;
-	@SuppressWarnings("unused")
-	private GUI.PaneSwitcher switcher;
 	
 	@FXML
 	private TextField pageID;
@@ -53,9 +57,8 @@ public class UploaderController implements IController {
 	ComboBox<String> pageNames;
 	
 	@Override
-	public void init(Stage primaryStage, PaneSwitcher switcher, IFacebookUploader uploader) {
+	public void init(Stage primaryStage, PaneSwitcher switcher, IFacebookUploader uploader) {		
 		this.primaryStage = primaryStage;
-		this.switcher = switcher;
 		this.uploader = uploader;
 		dirChooser = new DirectoryChooser();
 		numUploads.textProperty().bindBidirectional(uploader.getNumUploads(), new NumberStringConverter());
@@ -68,14 +71,17 @@ public class UploaderController implements IController {
 		pageNames.setItems(uploader.getPageNames());
 	}
 	
+	/** Starts searching in the directory and uploading those pictures */
 	public void start() {	
 		uploader.start(pageNames.getValue(), CHECKINTERVALL, path.getText(), datePicker.getValue(), publishTimes.getText());
 	}
 	
+	/** Stops searching in the directory and uploading those pictures */
 	public void stop() {
 		uploader.stop();
 	}
 	
+	/** Dialog to chose directory for new picture uploads */
 	public void openDirChooser() {
 		if(!path.getText().isEmpty()) {
 			dirChooser.setInitialDirectory(new File(path.getText()));
