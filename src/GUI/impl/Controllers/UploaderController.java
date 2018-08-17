@@ -1,11 +1,9 @@
-package main;
+package GUI.impl.Controllers;
 
 import java.io.File;
-import java.net.URL;
-import java.util.ResourceBundle;
 
+import GUI.PaneSwitcher;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
@@ -16,18 +14,21 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import javafx.util.converter.NumberStringConverter;
 import util.IFacebookUploader;
-import util.impl.FacebookUploader;
 
-public class Controller implements Initializable {
+public class UploaderController implements IController {
 
+	/** milliseconds between checks for new files in a directory */
 	private final static int CHECKINTERVALL = 2000;
 	
+	/** Interface to the FacebookUploader */
 	private IFacebookUploader uploader;
+	
+	/** Dialog to select directory */
 	private DirectoryChooser dirChooser;
+	
+	/** Stage the Pane/Scene is located */
 	private Stage primaryStage;
 	
-	@FXML
-	private TextField accesstoken;
 	@FXML
 	private TextField pageID;
 	@FXML
@@ -54,10 +55,11 @@ public class Controller implements Initializable {
 	Button stopButton;
 	@FXML
 	ComboBox<String> pageNames;
-		
+	
 	@Override
-	public void initialize(URL arg0, ResourceBundle arg1) {
-		uploader = new FacebookUploader();
+	public void init(Stage primaryStage, PaneSwitcher switcher, IFacebookUploader uploader) {		
+		this.primaryStage = primaryStage;
+		this.uploader = uploader;
 		dirChooser = new DirectoryChooser();
 		numUploads.textProperty().bindBidirectional(uploader.getNumUploads(), new NumberStringConverter());
 		numToUpload.textProperty().bindBidirectional(uploader.getNumToUpload(), new NumberStringConverter());
@@ -69,22 +71,17 @@ public class Controller implements Initializable {
 		pageNames.setItems(uploader.getPageNames());
 	}
 	
-	public void setStage(Stage primaryStage) {
-		this.primaryStage = primaryStage;
-	}
-	
-	public void login() {
-		uploader.login(accesstoken.getText());
-	}
-	
+	/** Starts searching in the directory and uploading those pictures */
 	public void start() {	
 		uploader.start(pageNames.getValue(), CHECKINTERVALL, path.getText(), datePicker.getValue(), publishTimes.getText());
 	}
 	
+	/** Stops searching in the directory and uploading those pictures */
 	public void stop() {
 		uploader.stop();
 	}
 	
+	/** Dialog to chose directory for new picture uploads */
 	public void openDirChooser() {
 		if(!path.getText().isEmpty()) {
 			dirChooser.setInitialDirectory(new File(path.getText()));
