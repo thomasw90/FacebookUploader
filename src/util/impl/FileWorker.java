@@ -148,14 +148,18 @@ public class FileWorker implements Runnable {
 		File folder = new File(folderPath);
 		File[] listOfFiles = folder.listFiles();
 
+		int newFiles = 0;
+		
 		for (File file : listOfFiles) {
 	    	String newPicture = file.getAbsolutePath();
 		    if (file.isFile() && !alreadyFoundFiles.contains(newPicture)) {
 				queueNewFiles.add(newPicture);
 		    	alreadyFoundFiles.add(newPicture);
-				numToUpload.set(numToUpload.get() + 1);
+		    	newFiles++;
 		    }
 		}
+		
+		numToUpload.set(numToUpload.get() + newFiles);
 	}
 	
 	/** Moves uploaded files into subfolder */
