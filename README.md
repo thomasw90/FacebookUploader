@@ -1,3 +1,0 @@
-# FacebookUploader
-
-blaa

@@ -1,1 +1,0 @@
-typeSearchIndex = [{"p":"main","l":"Controller"},{"p":"util.impl","l":"FacebookUploader"},{"p":"util.impl","l":"FileWorker"},{"p":"util","l":"IFacebookUploader"},{"p":"main","l":"Main"},{"p":"util.impl","l":"UploadWorker"}]
