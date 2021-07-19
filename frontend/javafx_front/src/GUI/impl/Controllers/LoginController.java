@@ -23,7 +23,7 @@ public class LoginController implements IController {
 
 	private static final String APP_ID = "2128746860732929";
 
-	private static final String APP_SECRET = "5b9cf135900da933868e33ba717bf482";
+	private static final String APP_SECRET = "INSERT_KEY";
 
 	private static final String SUCCESS_URL = "https://www.facebook.com/connect/login_success.html";
 
