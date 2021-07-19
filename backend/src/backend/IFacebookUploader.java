@@ -10,9 +10,9 @@ public interface IFacebookUploader {
 	
 	/** 
 	 * Sets Facebook login data
-	 * @param token Access-Token
+	 * @param string Access-Token
 	 */
-	boolean login(String token);
+	boolean login(String string);
 	
 	/** 
 	 * Starts searching and uploading in separated threads

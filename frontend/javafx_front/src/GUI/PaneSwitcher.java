@@ -10,12 +10,13 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
+import javafx.util.Pair;
 import backend.IFacebookUploader;
 
 public class PaneSwitcher {
 
 	/** Map for switching to other Panes */
-	private Map<ScreenType, Pane> screens;
+	private Map<ScreenType, Pair<Scene, IController>> screens;
 	
 	/** Stage the Pane/Scene has to be set */
 	private Stage primaryStage;
@@ -37,7 +38,8 @@ public class PaneSwitcher {
 	 * @param type Pane/Scene that has to be displayed
 	 */
 	public void changeScreen(ScreenType type) {
-		primaryStage.setScene(new Scene(screens.get(type)));
+		primaryStage.setScene(screens.get(type).getKey());
+		screens.get(type).getValue().activated();
 	}
 	
 	/** 
@@ -51,6 +53,6 @@ public class PaneSwitcher {
 	    Pane pane = loader.load();
 	    IController controller = loader.getController();
 	    controller.init(primaryStage, this, uploader);    
-		screens.put(type, pane);
+		screens.put(type, new Pair<Scene, IController>(new Scene(pane), controller));
 	}
 }

@@ -122,8 +122,8 @@ public class UploadWorker implements  Runnable {
 	 */
 	public boolean login(String token) {
 		pageNames.clear();
-		fbClient = new DefaultFacebookClient(token, Version.LATEST);
 		try {
+			fbClient = new DefaultFacebookClient(token, Version.LATEST);
 			Connection<Page> pages = fbClient.fetchConnection("me/accounts", Page.class);
 			for(Page page : pages.getData()) {
 				nameWithPage.put(page.getName(), page);

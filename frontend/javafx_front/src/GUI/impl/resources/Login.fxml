@@ -10,7 +10,6 @@
    <children>
       <VBox alignment="CENTER" spacing="10.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
          <children>
-            <TextField fx:id="accesstoken" promptText="Access-Token" text="EAACEdEose0cBAJ6NRVZCZA3M1y1DngymHEHKGjdByeCfb8FWCx0ZAglw9exE99scOnHqpcN3o7u54ytFTOBPFLf6mJ3yINc4FoTMJ0xeJQck56JknfCsXoCPVASWwDckHtuCFBi93P04OXOHPEbnHggwcSPNCh53Htsbx9koqX50j6QM6TIgEwHXfMyM1CnQOO4YFZCEnAZDZD" />
             <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#login" text="Login" />
             <Text fx:id="notification" strokeType="OUTSIDE" strokeWidth="0.0" text="Please login" />
          </children>

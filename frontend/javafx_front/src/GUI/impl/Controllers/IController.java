@@ -8,4 +8,7 @@ public interface IController {
 	
 	/** Initializes controller */
 	void init(Stage primaryStage, PaneSwitcher switcher, IFacebookUploader uploader);
+	
+	/** Called after screen activation */
+	void activated();
 }

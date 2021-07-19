@@ -71,6 +71,11 @@ public class UploaderController implements IController {
 		pageNames.setItems(uploader.getPageNames());
 	}
 	
+	@Override
+	public void activated() {
+		// nothing todo yet
+	}
+	
 	/** Starts searching in the directory and uploading those pictures */
 	public void start() {	
 		uploader.start(pageNames.getValue(), CHECKINTERVALL, path.getText(), datePicker.getValue(), publishTimes.getText());
